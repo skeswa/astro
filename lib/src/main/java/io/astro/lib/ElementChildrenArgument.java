@@ -3,7 +3,7 @@ package io.astro.lib;
 /**
  * @author skeswa
  */
-public class ElementChildrenArgument implements ElementDeclarationArgument {
+public class ElementChildrenArgument implements ElementArgument {
     private final ElementChild[] children;
 
     ElementChildrenArgument(ElementChild[] children) {

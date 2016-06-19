@@ -3,7 +3,7 @@ package io.astro.lib;
 /**
  * @author skeswa
  */
-class ElementAttributeArgument<T> implements ElementDeclarationArgument {
+class ElementAttributeArgument<T> implements ElementArgument {
     private final Attribute<T> attribute;
     private final T value;
 
@@ -14,6 +14,6 @@ class ElementAttributeArgument<T> implements ElementDeclarationArgument {
 
     @Override
     public void bind(Element element) {
-        element.declareAttributeValueAssignment(this);
+        element.declareAttribute(this);
     }
 }

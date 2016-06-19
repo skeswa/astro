@@ -3,6 +3,6 @@ package io.astro.lib;
 /**
  * @author skeswa
  */
-public interface ElementDeclarationArgument {
+public interface ElementArgument {
     void bind(Element element);
 }

@@ -1,40 +1,64 @@
 package io.astro.lib;
 
-import java.util.Arrays;
-import java.util.HashMap;
+import android.graphics.Color;
+import android.provider.Settings;
 
-import static io.astro.lib.TestComponent1.name;
 import static io.astro.lib.TestComponent1.age;
+import static io.astro.lib.TestComponent1.name;
+import static io.astro.lib.TestComponent1.onClick;
 
 /**
  * @author skeswa
  */
-public class TestComponent2 extends Component {
+public class TestComponent2 extends Component implements ClickListener {
+    private static final Field<Boolean> visible = Field.create(Boolean.class, false);
+
+    private static final Style containerStyle = Style
+        .alignItems(Flex.Alignment.CENTER)
+        .flexDirection(Flex.Direction.ROW)
+        .justifyContent(Flex.Justification.CENTER)
+        .padding(15)
+        .create();
+
+    private static final Style itemStyle = Style
+        .backgroundColor(Color.BLUE)
+        .marginLeft(12)
+        .create();
+
+    private static final Style firstItemStyle = Style.from(itemStyle)
+        .marginLeft(null)
+        .create();
+
+    @Override
+    public void onClick() {
+        Update.set(visible, true).execute(this);
+    }
+
     @Override
     public Element render() {
         return (
             $(TestComponent1.class,
+                styles(containerStyle, valueOf(visible) ? CommonStyles.invisible : null),
                 attr(name, "value"),
                 attr(age, 56),
-                attrs(new HashMap<Attribute, Object>()),
+                attr(onClick, this),
                 children(
-                    $(Arrays.asList(
-                        $(TestComponent1.class, attr(TestComponent1.name, "well well well")),
-                        $(TestComponent1.class),
-                        $(TestComponent1.class)
-                    )),
                     $(TestComponent1.class,
-                        attr(TestComponent1.name, "value"),
-                        attr(TestComponent1.age, 56)),
+                        style(firstItemStyle),
+                        attr(name, "value"),
+                        attr(age, 56)),
                     $(TestComponent1.class,
-                        attr(TestComponent1.name, "value"),
-                        attr(TestComponent1.age, 56)),
+                        style(itemStyle),
+                        attr(name, "value"),
+                        attr(age, 56)),
                     $(TestComponent1.class,
-                        attr(TestComponent1.name, "value"),
-                        attr(TestComponent1.age, 56)),
+                        style(itemStyle),
+                        attr(name, "value"),
+                        attr(age, 56)),
                     $(TestComponent1.class,
-                        attr(TestComponent1.name, "value"),
-                        attr(TestComponent1.age, 56))
+                        style(itemStyle),
+                        attr(name, "value"),
+                        attr(age, 56))
                 ))
             );
     }

@@ -13,10 +13,13 @@ import java.util.Set;
  */
 public abstract class Component implements Renderable {
     private List<Element> children;
-    private Map<Attribute<?>, Object> attributeValueMap = new HashMap<>();
+    private Map<Field<?>, Object> fieldValueMap;
+    private Map<Attribute<?>, Object> attributeValueMap;
 
     @Override
     public void onMount() {
+        fieldValueMap = new HashMap<>();
+        attributeValueMap = new HashMap<>();
     }
 
     @Override
@@ -35,6 +38,8 @@ public abstract class Component implements Renderable {
 
     @Override
     public void onUnmount() {
+        fieldValueMap = null;
+        attributeValueMap = null;
     }
 
     @Override
@@ -60,6 +65,25 @@ public abstract class Component implements Renderable {
         return new ElementAttributeListArgument(assignments);
     }
 
+    protected final ElementStyleArgument style(final Style style) {
+        return new ElementStyleArgument(style);
+    }
+
+    protected final ElementStyleListArgument styles(final Collection<Style> styles) {
+        if (styles == null) {
+            return null;
+        }
+
+        return new ElementStyleListArgument(styles);
+    }
+
+    protected final ElementStyleListArgument styles(final Style...styles) {
+        if (styles == null) {
+            return null;
+        }
+
+        return new ElementStyleListArgument(styles);
+    }
 
     protected final ElementChildrenArgument children(ElementChild... elementChildren) {
         return new ElementChildrenArgument(elementChildren);
@@ -85,9 +109,10 @@ public abstract class Component implements Renderable {
         return new ChildElementList(elements);
     }
 
-    protected final Element $(final Class<? extends Renderable> componentType, final ElementDeclarationArgument... args) {
+    protected final Element $(final Class<? extends Renderable> componentType, final ElementArgument... args) {
         // The component type is required.
         if (componentType == null) {
+            // TODO(skeswa): standardize parameter null check exception messages.
             throw new IllegalArgumentException("The specified component type was null.");
         }
 
@@ -101,12 +126,46 @@ public abstract class Component implements Renderable {
 
         // Bind all of the assignments.
         final List<ElementAttributeArgument> assignments = new ArrayList<>(args.length);
-        for (ElementDeclarationArgument arg : args) {
+        for (ElementArgument arg : args) {
             if (arg != null) {
                 arg.bind(element);
             }
         }
 
         return element;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected final <T> T valueOf(final Attribute<T> attribute) {
+        if (attribute == null) {
+            throw new IllegalArgumentException("Null is not a valid attribute.");
+        }
+
+        if (attributeValueMap == null) {
+            throw new IllegalStateException("Component is not mounted.");
+        }
+
+        if (!attributeValueMap.containsKey(attribute)) {
+            attributeValueMap.put(attribute, attribute.getDefaultValue());
+        }
+
+        return (T) attributeValueMap.get(attribute);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected final <T> T valueOf(final Field<T> field) {
+        if (field == null) {
+            throw new IllegalArgumentException("Null is not a valid field.");
+        }
+
+        if (fieldValueMap == null) {
+            throw new IllegalStateException("Component is not mounted.");
+        }
+
+        if (!fieldValueMap.containsKey(field)) {
+            fieldValueMap.put(field, field.getDefaultValue());
+        }
+
+        return (T) fieldValueMap.get(field);
     }
 }

@@ -3,5 +3,4 @@ package io.astro.lib;
 /**
  * @author skeswa
  */
-public class StyleAttribute<T> {
-}
+public class StyleAttribute<T> {}

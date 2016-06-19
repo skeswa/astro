@@ -3,19 +3,19 @@ package io.astro.lib;
 /**
  * @author skeswa
  */
-public class Attribute<T> {
-    public static <T> Attribute<T> create(Class<T> type) {
-        return new Attribute<T>(type);
+public class Field<T> {
+    public static <T> Field<T> create(Class<T> type) {
+        return new Field<T>(type);
     }
 
-    public static <T> Attribute<T> create(Class<T> type, T defaultValue) {
-        return new Attribute<T>(type, defaultValue);
+    public static <T> Field<T> create(Class<T> type, T defaultValue) {
+        return new Field<T>(type, defaultValue);
     }
 
     private final Class<T> type;
     private final T defaultValue;
 
-    private Attribute(Class<T> type) {
+    private Field(Class<T> type) {
         if (type == null) {
             throw new IllegalArgumentException("Type cannot be null.");
         }
@@ -24,7 +24,7 @@ public class Attribute<T> {
         this.defaultValue = null;
     }
 
-    private Attribute(Class<T> type, T defaultValue) {
+    private Field(Class<T> type, T defaultValue) {
         if (type == null) {
             throw new IllegalArgumentException("Type cannot be null.");
         }

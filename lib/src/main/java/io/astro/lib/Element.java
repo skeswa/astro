@@ -8,6 +8,7 @@ import java.util.List;
  */
 public class Element implements ElementChild {
     private Element parent;
+    private List<Style> styles;
     private List<Element> children;
     private List<ElementAttributeArgument> attributes;
     private final Class<? extends Renderable> renderableType;
@@ -16,8 +17,8 @@ public class Element implements ElementChild {
         this.renderableType = renderableType;
     }
 
-    void declareAttributeValueAssignment(final ElementAttributeArgument assignment) {
-        if (assignment == null){
+    void declareAttribute(final ElementAttributeArgument attribute) {
+        if (attribute == null){
             return;
         }
 
@@ -25,7 +26,7 @@ public class Element implements ElementChild {
             attributes = new ArrayList<>();
         }
 
-        attributes.add(assignment);
+        attributes.add(attribute);
     }
 
     void declareChildElement(final Element child) {
@@ -40,6 +41,18 @@ public class Element implements ElementChild {
         children.add(child);
     }
 
+    void declareStyle(final Style style) {
+        if (style == null){
+            return;
+        }
+
+        if (styles == null) {
+            styles = new ArrayList<>();
+        }
+
+        styles.add(style);
+    }
+
     List<Element> getChildren() {
         return children;
     }
@@ -50,6 +63,10 @@ public class Element implements ElementChild {
 
     Class<? extends Renderable> getRenderableType() {
         return renderableType;
+    }
+
+    public List<Style> getStyles() {
+        return styles;
     }
 
     @Override
