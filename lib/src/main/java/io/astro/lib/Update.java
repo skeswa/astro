@@ -1,7 +1,5 @@
 package io.astro.lib;
 
-import java.util.ArrayList;
-
 /**
  * @author skeswa
  */
@@ -10,11 +8,11 @@ public class Update {
         return new UpdateBuilder().set(field, value);
     }
 
-    public static UpdateBuilder listen(final UpdateListener listener) {
-        return new UpdateBuilder().listen(listener);
+    public static <T> UpdateBuilder listen(T context, final UpdateListener<T> listener) {
+        return new UpdateBuilder().listen(context, listener);
     }
 
-    public static void execute(final Renderable renderable) {
+    public static void execute(final StatefulRenderable renderable) {
         new UpdateBuilder().execute(renderable);
     }
 }

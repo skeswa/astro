@@ -1,37 +1,41 @@
 package io.astro.lib;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author skeswa
  */
 public class UpdateBuilder {
+    private Object listenerContext;
     private UpdateListener listener;
-    private List<FieldValueAssignment<?>> values;
+    private Map<Field, Object> fieldValueMap;
 
     UpdateBuilder() {}
 
-    public <T> UpdateBuilder set(Field<T> field, T value) {
+    public <T> UpdateBuilder set(final Field<T> field, final T value) {
         if (field == null) {
             throw new IllegalArgumentException("Null is not a valid field.");
         }
 
-        if (values == null) {
-            values = new ArrayList<>();
+        if (fieldValueMap == null) {
+            fieldValueMap = new HashMap<>();
         }
 
-        values.add(new FieldValueAssignment<T>(field, value));
+        fieldValueMap.put(field, value);
 
         return this;
     }
 
-    public UpdateBuilder listen(final UpdateListener listener) {
+    public <T> UpdateBuilder listen(final T context, final UpdateListener<T> listener) {
         if (listener == null) {
             throw new IllegalArgumentException("Null is not a valid listener.");
         }
 
         this.listener = listener;
+        this.listenerContext = context;
 
         return this;
     }

@@ -1,6 +1,14 @@
 package io.astro.lib;
 
-import android.graphics.Color;
+import io.astro.lib.style.constants.BorderStyle;
+import io.astro.lib.style.constants.Flex;
+import io.astro.lib.style.constants.FontStyle;
+import io.astro.lib.style.constants.FontWeight;
+import io.astro.lib.style.constants.Position;
+import io.astro.lib.style.constants.ResizeMode;
+import io.astro.lib.style.constants.TextAlignment;
+import io.astro.lib.style.constants.TextDecoration;
+import io.astro.lib.style.constants.Visibility;
 
 /**
  * @author skeswa
@@ -67,12 +75,12 @@ class StyleAttributes {
     static final StyleAttribute<FontStyle> fontStyle = new StyleAttribute<>();
     static final StyleAttribute<FontWeight> fontWeight = new StyleAttribute<>();
     static final StyleAttribute<Number> lineHeight = new StyleAttribute<>();
-    static final StyleAttribute<HorizontalTextAlignment> textAlign = new StyleAttribute<>();
+    static final StyleAttribute<TextAlignment.Horizontal> textAlign = new StyleAttribute<>();
     static final StyleAttribute<TextDecoration> textDecorationLine = new StyleAttribute<>();
     static final StyleAttribute<Integer> textShadowColor = new StyleAttribute<>();
     static final StyleAttribute<Number> textShadowOffsetHeight = new StyleAttribute<>();
     static final StyleAttribute<Number> textShadowOffsetWidth = new StyleAttribute<>();
     static final StyleAttribute<Number> textShadowRadius = new StyleAttribute<>();
-    static final StyleAttribute<VerticalTextAlignment> textAlignVertical = new StyleAttribute<>();
+    static final StyleAttribute<TextAlignment.Vertical> textAlignVertical = new StyleAttribute<>();
     //
 }

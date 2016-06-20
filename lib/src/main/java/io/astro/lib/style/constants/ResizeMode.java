@@ -1,4 +1,4 @@
-package io.astro.lib;
+package io.astro.lib.style.constants;
 
 /**
  * @author skeswa

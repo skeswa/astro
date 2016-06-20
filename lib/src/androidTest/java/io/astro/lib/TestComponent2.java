@@ -1,7 +1,8 @@
 package io.astro.lib;
 
 import android.graphics.Color;
-import android.provider.Settings;
+
+import io.astro.lib.style.constants.Flex;
 
 import static io.astro.lib.TestComponent1.age;
 import static io.astro.lib.TestComponent1.name;
@@ -31,35 +32,33 @@ public class TestComponent2 extends Component implements ClickListener {
 
     @Override
     public void onClick() {
-        Update.set(visible, true).execute(this);
+        Update
+            .set(visible, true)
+            .execute(this);
     }
 
     @Override
     public Element render() {
-        return (
-            $(TestComponent1.class,
-                styles(containerStyle, valueOf(visible) ? CommonStyles.invisible : null),
-                attr(name, "value"),
-                attr(age, 56),
-                attr(onClick, this),
-                children(
-                    $(TestComponent1.class,
-                        style(firstItemStyle),
-                        attr(name, "value"),
-                        attr(age, 56)),
-                    $(TestComponent1.class,
-                        style(itemStyle),
-                        attr(name, "value"),
-                        attr(age, 56)),
-                    $(TestComponent1.class,
-                        style(itemStyle),
-                        attr(name, "value"),
-                        attr(age, 56)),
-                    $(TestComponent1.class,
-                        style(itemStyle),
-                        attr(name, "value"),
-                        attr(age, 56))
-                ))
-            );
+        return
+            $(TestComponent1.class)
+                .styles(containerStyle, valueOf(visible) ? CommonStyles.invisible : null)
+                .attr(name, "value")
+                .attr(age, 56)
+                .attr(onClick, this)
+                .children(
+                    $(TestComponent1.class)
+                        .style(firstItemStyle)
+                        .attr(name, "random")
+                        .attr(age, (int) (Math.random() * 19)),
+                    $(TestComponent1.class)
+                        .style(firstItemStyle)
+                        .attr(name, "random")
+                        .attr(age, (int) (Math.random() * 19)),
+                    $(TestComponent1.class)
+                        .style(firstItemStyle)
+                        .attr(name, "random")
+                        .attr(age, (int) (Math.random() * 19))
+                )
+                .create();
     }
 }

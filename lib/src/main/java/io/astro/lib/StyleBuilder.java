@@ -1,24 +1,33 @@
 package io.astro.lib;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+
+import io.astro.lib.style.constants.BorderStyle;
+import io.astro.lib.style.constants.Flex;
+import io.astro.lib.style.constants.FontStyle;
+import io.astro.lib.style.constants.FontWeight;
+import io.astro.lib.style.constants.Position;
+import io.astro.lib.style.constants.ResizeMode;
+import io.astro.lib.style.constants.TextAlignment;
+import io.astro.lib.style.constants.TextDecoration;
+import io.astro.lib.style.constants.Visibility;
 
 /**
  * @author skeswa
  */
 public class StyleBuilder {
     private Style ancestor;
-    private final List<StyleAttributeArgument<?>> attributes;
+    private final Map<StyleAttribute, Object> attributes;
 
     StyleBuilder() {
-        this.attributes = new ArrayList<>();
+        this.attributes = new HashMap<>();
     }
     
-    @SuppressWarnings("unchecked")
     private <T> void add(final StyleAttribute<T> attribute, final T value) {
-        if (attribute != null) attributes.add(new StyleAttributeArgument(attribute, value));
+        if (attribute != null) attributes.put(attribute, value);
     }
 
     // General
@@ -28,6 +37,15 @@ public class StyleBuilder {
     }
 
     public Style create() {
+        if (ancestor != null) {
+            final Set<Entry<StyleAttribute, Object>> ancestorAttributes = ancestor.getAttributes().entrySet();
+            for (final Entry<StyleAttribute, Object> entry : ancestorAttributes) {
+                if (!attributes.containsKey(entry.getKey())) {
+                    attributes.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+
         return new Style(attributes);
     }
 
@@ -268,6 +286,11 @@ public class StyleBuilder {
         return this;
     }
 
+    public StyleBuilder opacity(final Number value) {
+        add(StyleAttributes.opacity, value);
+        return this;
+    }
+
     public StyleBuilder overflow(final Visibility value) {
         add(StyleAttributes.overflow, value);
         return this;
@@ -320,7 +343,7 @@ public class StyleBuilder {
         return this;
     }
 
-    public StyleBuilder textAlign(final HorizontalTextAlignment value) {
+    public StyleBuilder textAlign(final TextAlignment.Horizontal value) {
         add(StyleAttributes.textAlign, value);
         return this;
     }
@@ -350,7 +373,7 @@ public class StyleBuilder {
         return this;
     }
 
-    public StyleBuilder textAlignVertical(final VerticalTextAlignment value) {
+    public StyleBuilder textAlignVertical(final TextAlignment.Vertical value) {
         add(StyleAttributes.textAlignVertical, value);
         return this;
     }
