@@ -29,10 +29,6 @@ public class Attribute<T> {
             throw new IllegalArgumentException("Type cannot be null.");
         }
 
-        if (defaultValue == null) {
-            throw new IllegalArgumentException("Default value cannot be null.");
-        }
-
         this.type = type;
         this.defaultValue = defaultValue;
     }

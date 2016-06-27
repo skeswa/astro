@@ -1,7 +1,6 @@
 package io.astro.lib;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -10,43 +9,48 @@ import java.util.List;
  */
 public class ElementChildArgumentList implements ElementChildArgument {
     private final ElementChildArgument[] elementsArray;
-    private final Collection<? extends Element> elementsCollection;
+    private final Collection<ElementBuilder> elementsCollection;
 
-    ElementChildArgumentList(Element[] elements) {
+    ElementChildArgumentList(ElementBuilder[] elements) {
         this.elementsArray = elements;
         this.elementsCollection = null;
     }
 
-    ElementChildArgumentList(Collection<? extends Element> elements) {
+    ElementChildArgumentList(Collection<ElementBuilder> elements) {
         this.elementsArray = null;
         this.elementsCollection = elements;
     }
 
+
     @Override
-    public Element getElement() {
+    public ElementBuilder getElementBuilder() {
         return null;
     }
 
     @Override
-    public List<? extends Element> getElements() {
+    public List<ElementBuilder> getElementBuilders() {
         if (elementsArray != null) {
-            final List<Element> elements = new ArrayList<>(elementsArray.length);
+            final List<ElementBuilder> elementBuilders = new ArrayList<>(elementsArray.length);
 
             for (final ElementChildArgument arg : elementsArray) {
-                final Element element = arg.getElement();
-                if (element != null) {
-                    elements.add(element);
+                final ElementBuilder elementBuilder = arg.getElementBuilder();
+                if (elementBuilder != null) {
+                    elementBuilders.add(elementBuilder);
                 } else {
-                    final List<? extends Element> subElements = arg.getElements();
-                    if (subElements != null) {
-                        elements.addAll(subElements);
+                    final List<ElementBuilder> subElementBuilders = arg.getElementBuilders();
+                    if (subElementBuilders != null) {
+                        elementBuilders.addAll(subElementBuilders);
                     }
                 }
             }
 
-            return elements;
+            return elementBuilders;
         } else {
-            return new ArrayList<>(elementsCollection);
+            if (elementsCollection == null) {
+                return new ArrayList<>();
+            } else {
+                return new ArrayList<>(elementsCollection);
+            }
         }
     }
 }

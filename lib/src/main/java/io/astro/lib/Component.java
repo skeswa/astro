@@ -7,24 +7,24 @@ import java.util.Collection;
  */
 public abstract class Component extends BaseStatefulRenderable {
 
-    protected final Element $(final Element element) {
-        return element;
+    protected final ElementBuilder $(final ElementBuilder elementBuilder) {
+        return elementBuilder;
     }
 
-    protected final ElementChildArgumentList $(final Element...elements) {
-        if (elements == null || elements.length == 0) {
+    protected final ElementChildArgumentList $(final ElementBuilder...elementBuilders) {
+        if (elementBuilders == null || elementBuilders.length == 0) {
             return null;
         }
 
-        return new ElementChildArgumentList(elements);
+        return new ElementChildArgumentList(elementBuilders);
     }
 
-    protected final ElementChildArgumentList $(final Collection<? extends Element> elements) {
-        if (elements == null || elements.size() == 0) {
+    protected final ElementChildArgumentList $(final Collection<ElementBuilder> elementBuilders) {
+        if (elementBuilders == null || elementBuilders.size() == 0) {
             return null;
         }
 
-        return new ElementChildArgumentList(elements);
+        return new ElementChildArgumentList(elementBuilders);
     }
 
     protected final ElementBuilder $(final Class<? extends Renderable> renderableType) {

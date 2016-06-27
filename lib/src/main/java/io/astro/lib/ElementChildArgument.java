@@ -6,6 +6,6 @@ import java.util.List;
  * @author skeswa
  */
 public interface ElementChildArgument {
-    Element getElement();
-    List<? extends Element> getElements();
+    ElementBuilder getElementBuilder();
+    List<ElementBuilder> getElementBuilders();
 }

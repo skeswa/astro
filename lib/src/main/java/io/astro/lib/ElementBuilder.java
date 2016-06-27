@@ -1,23 +1,46 @@
 package io.astro.lib;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author skeswa
  */
 public class ElementBuilder implements ElementChildArgument {
+    private static final long RESERVED_KEYS_COUNT = 10000;
+
+    private Long key;
+    private String ref;
     private List<Style> styles;
-    private List<Element> children;
+    private List<ElementBuilder> children;
     private Map<Attribute, Object> attributeValueMap;
     private final Class<? extends Renderable> renderableType;
 
     ElementBuilder(final Class<? extends Renderable> renderableType) {
         this.renderableType = renderableType;
+    }
+
+    public <T> ElementBuilder ref(final String ref) {
+        if (ref == null) {
+            throw new IllegalArgumentException("Null is not a valid ref");
+        }
+
+        this.ref = ref;
+
+        return this;
+    }
+
+    public <T> ElementBuilder key(final long key) {
+        if (key < 0) {
+            throw new IllegalArgumentException("Keys must be non-negative");
+        }
+
+        if (key > Long.MAX_VALUE - RESERVED_KEYS_COUNT) {
+            throw new IllegalArgumentException("Keys must be less than " + (Long.MAX_VALUE - RESERVED_KEYS_COUNT));
+        }
+
+        this.key = key + RESERVED_KEYS_COUNT;
+
+        return this;
     }
 
     public <T> ElementBuilder attr(final Attribute<T> attribute, final T value) {
@@ -93,7 +116,7 @@ public class ElementBuilder implements ElementChildArgument {
             }
 
             for (final ElementChildArgument arg : args) {
-                final Element element = arg.getElement();
+                final ElementBuilder element = arg.getElementBuilder();
 
                 if (element != null) {
                     children.add(element);
@@ -105,9 +128,18 @@ public class ElementBuilder implements ElementChildArgument {
     }
 
     public Element create() {
+        long keyIndex = 0;
         Element[] children = null;
         if (this.children != null && this.children.size() > 0) {
-            children = this.children.toArray(new Element[this.children.size()]);
+            children = new Element[this.children.size()];
+            for (int i = 0; i < this.children.size(); i++) {
+                final ElementBuilder elementBuilder = this.children.get(i);
+                if (elementBuilder.key == null) {
+                    elementBuilder.key = keyIndex++;
+                }
+
+                children[i] = elementBuilder.create();
+            }
         }
 
         Map<StyleAttribute, Object> styleAttributes = null;
@@ -119,16 +151,16 @@ public class ElementBuilder implements ElementChildArgument {
             }
         }
 
-        return new Element(children, attributeValueMap, renderableType, styleAttributes);
+        return new Element(key, ref, children, attributeValueMap, renderableType, styleAttributes);
     }
 
     @Override
-    public Element getElement() {
-        return create();
+    public ElementBuilder getElementBuilder() {
+        return this;
     }
 
     @Override
-    public List<? extends Element> getElements() {
+    public List<ElementBuilder> getElementBuilders() {
         return null;
     }
 }

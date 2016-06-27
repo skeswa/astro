@@ -1,6 +1,7 @@
 package io.astro.lib;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * @author skeswa
@@ -8,6 +9,7 @@ import java.util.Arrays;
 public abstract class BaseRenderable implements Renderable {
     private Element[] children;
     private AttributeValueSet attributeState;
+    private StyleAttributeValueSet styleAttributeState;
 
     @Override
     public void onMount() {}
@@ -30,10 +32,22 @@ public abstract class BaseRenderable implements Renderable {
     }
 
     @Override
+    public void setStyleAttributes(final StyleAttributeValueSet nextStyleAttributeState) {
+        // Make sure that this renderable is cleared for an update.
+        if (shouldUpdate(nextStyleAttributeState)) {
+            styleAttributeState = nextStyleAttributeState;
+            // TODO(skeswa): re-render.
+        }
+    }
+
+    @Override
     public boolean shouldUpdate(final AttributeValueSet nextAttributeState) {
-        return attributeState == null && nextAttributeState != null ||
-            attributeState != null && nextAttributeState == null ||
-            (attributeState != null && !attributeState.equals(nextAttributeState));
+        return !Util.equals(attributeState, nextAttributeState);
+    }
+
+    @Override
+    public boolean shouldUpdate(final StyleAttributeValueSet nextStyleAttributeValueSet) {
+        return !Util.equals(styleAttributeState, nextStyleAttributeValueSet);
     }
 
     @Override
@@ -52,6 +66,18 @@ public abstract class BaseRenderable implements Renderable {
         }
 
         return attributeState.valueOf(attribute);
+    }
+
+    protected <T> T valueOf(final StyleAttribute<T> styleAttribute) {
+        if (styleAttribute == null) {
+            throw new IllegalArgumentException("Null is not a valid style attribute.");
+        }
+
+        if (styleAttributeState == null || !styleAttributeState.has(styleAttribute)) {
+            return styleAttribute.getDefaultValue();
+        }
+
+        return styleAttributeState.valueOf(styleAttribute);
     }
 
     protected Element[] getChildren() {
