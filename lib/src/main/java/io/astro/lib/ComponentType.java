@@ -6,7 +6,6 @@ import android.view.View;
  * @author skeswa
  */
 interface ComponentType {
-    void onMount();
     void onUnmount();
 
     void setAttributes(final AttributeValueSet nextAttributeState);

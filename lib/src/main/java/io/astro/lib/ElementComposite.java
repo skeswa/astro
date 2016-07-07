@@ -238,7 +238,7 @@ class ElementComposite {
             destroy();
 
             // Then, create a brand new output viewable.
-            final Viewable nextOutputViewable = createViewable(nextEl);
+            final Viewable nextOutputViewable = createViewable(placement, nextEl);
             final Element[] nextOutputElementChildren = nextEl.getChildren();
             final ElementComposite[] nextElementCompositeChildren =
                 new ElementComposite[nextOutputElementChildren.length];
@@ -383,10 +383,11 @@ class ElementComposite {
     }
 
     @SuppressWarnings("all")
-    private static Viewable createViewable(final Element element) {
+    private static Viewable createViewable(final Placement placement, final Element element) {
         try {
             final Viewable viewable = element.getViewableType().newInstance();
 
+            viewable.onMount(placement.getContext());
             viewable.setAttributes(element.getAttributes());
             viewable.setStyleAttributes(element.getStyleAttributes());
 

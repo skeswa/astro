@@ -1,5 +1,6 @@
 package io.astro.lib;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
