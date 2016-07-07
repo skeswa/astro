@@ -1,7 +1,6 @@
 package io.astro.lib;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 /**
  * @author skeswa
@@ -42,12 +41,12 @@ public abstract class BaseRenderable implements Renderable {
 
     @Override
     public boolean shouldUpdate(final AttributeValueSet nextAttributeState) {
-        return !Util.equals(attributeState, nextAttributeState);
+        return !ObjectUtil.equals(attributeState, nextAttributeState);
     }
 
     @Override
     public boolean shouldUpdate(final StyleAttributeValueSet nextStyleAttributeValueSet) {
-        return !Util.equals(styleAttributeState, nextStyleAttributeValueSet);
+        return !ObjectUtil.equals(styleAttributeState, nextStyleAttributeValueSet);
     }
 
     @Override

@@ -3,14 +3,9 @@ package io.astro.lib;
 /**
  * @author skeswa
  */
-public interface Renderable {
-    void onMount();
-    void onUnmount();
-    boolean isMounted();
-
+public interface Renderable extends ComponentType {
+    void setRoot(final Placement placement);
     void setChildren(final Element[] children);
-    void setAttributes(final AttributeValueSet nextAttributeState);
-    void setStyleAttributes(final StyleAttributeValueSet nextStyleAttributeValueSet);
 
     boolean shouldUpdate(final AttributeValueSet nextAttributeState);
     boolean shouldUpdate(final StyleAttributeValueSet nextStyleAttributeValueSet);

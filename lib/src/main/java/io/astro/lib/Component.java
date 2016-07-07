@@ -5,7 +5,36 @@ import java.util.Collection;
 /**
  * @author skeswa
  */
-public abstract class Component extends BaseStatefulRenderable {
+public abstract class Component implements Renderable {
+    private FieldValueSet fieldState;
+
+    // TODO
+    void setFields(final FieldValueSet nextFieldState) {
+        // Make sure that this component is cleared for an update.
+        if (shouldUpdate(nextFieldState)) {
+            fieldState = nextFieldState;
+            // TODO(skeswa): re-render.
+        }
+    }
+
+    // TODO
+    boolean shouldUpdate(final FieldValueSet nextFieldState) {
+        return fieldState == null && nextFieldState != null ||
+            fieldState != null && nextFieldState == null ||
+            (fieldState != null && !fieldState.equals(nextFieldState));
+    }
+
+    protected <T> T valueOf(final Field<T> field) {
+        if (field == null) {
+            throw new IllegalArgumentException("Null is not a valid field.");
+        }
+
+        if (fieldState == null || !fieldState.has(field)) {
+            return field.getDefaultValue();
+        }
+
+        return fieldState.valueOf(field);
+    }
 
     protected final ElementBuilder $(final ElementBuilder elementBuilder) {
         return elementBuilder;
@@ -36,4 +65,7 @@ public abstract class Component extends BaseStatefulRenderable {
 
         return new ElementBuilder(renderableType);
     }
+
+    @Override
+    public abstract Element render();
 }

@@ -1,7 +1,6 @@
 package io.astro.lib;
 
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * @author skeswa
@@ -34,11 +33,11 @@ public class StyleAttributeValueSet {
 
         final StyleAttributeValueSet other = (StyleAttributeValueSet) o;
 
-        return Util.equals(styleAttributeValueMap, other.styleAttributeValueMap);
+        return ObjectUtil.equals(styleAttributeValueMap, other.styleAttributeValueMap);
     }
 
     @Override
     public int hashCode() {
-        return Util.hash(styleAttributeValueMap);
+        return ObjectUtil.hash(styleAttributeValueMap);
     }
 }

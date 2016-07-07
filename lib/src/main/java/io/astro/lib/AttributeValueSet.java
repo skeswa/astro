@@ -1,6 +1,5 @@
 package io.astro.lib;
 
-import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -34,17 +33,11 @@ public class AttributeValueSet {
 
         final AttributeValueSet other = (AttributeValueSet) o;
 
-        if (attributeValueMap == null && other.attributeValueMap != null) return false;
-        if (attributeValueMap != null && other.attributeValueMap == null) return false;
-        if (attributeValueMap != null && !attributeValueMap.equals(other.attributeValueMap)) return false;
-
-        return true;
+        return ObjectUtil.equals(attributeValueMap, other.attributeValueMap);
     }
 
     @Override
     public int hashCode() {
-        int hashCode = 1;
-        hashCode = 31 * hashCode + (attributeValueMap == null ? 0 : attributeValueMap.hashCode());
-        return hashCode;
+        return ObjectUtil.hash(attributeValueMap);
     }
 }

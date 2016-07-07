@@ -63,7 +63,7 @@ public class UIImplementation {
 
   protected ReactShadowNode createRootShadowNode() {
     ReactShadowNode rootCSSNode = new ReactShadowNode();
-    rootCSSNode.setViewClassName("Root");
+    rootCSSNode.setViewClassName("Placement");
     return rootCSSNode;
   }
 

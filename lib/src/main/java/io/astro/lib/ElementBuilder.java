@@ -10,13 +10,28 @@ public class ElementBuilder implements ElementChildArgument {
 
     private Long key;
     private String ref;
+    private boolean isNative;
     private List<Style> styles;
     private List<ElementBuilder> children;
     private Map<Attribute, Object> attributeValueMap;
+    private final Class<? extends Viewable> viewableType;
     private final Class<? extends Renderable> renderableType;
 
-    ElementBuilder(final Class<? extends Renderable> renderableType) {
-        this.renderableType = renderableType;
+    @SuppressWarnings("unchecked")
+    ElementBuilder(final Class<? extends ComponentType> componentType) {
+        if (componentType == null) {
+            throw new IllegalArgumentException("Null is not a valid component type");
+        }
+
+        if (Renderable.class.isAssignableFrom(componentType)) {
+            this.viewableType = null;
+            this.renderableType = (Class<? extends Renderable>) componentType;
+        } else if (Viewable.class.isAssignableFrom(componentType)) {
+            this.viewableType = (Class<? extends Viewable>) componentType;
+            this.renderableType = null;
+        }
+
+        throw new IllegalArgumentException("Component type must implement Renderable or Viewable");
     }
 
     public <T> ElementBuilder ref(final String ref) {
@@ -151,7 +166,16 @@ public class ElementBuilder implements ElementChildArgument {
             }
         }
 
-        return new Element(key, ref, children, attributeValueMap, renderableType, styleAttributes);
+        return new Element(
+            key,
+            ref,
+            isNative,
+            children,
+            attributeValueMap,
+            viewableType,
+            renderableType,
+            styleAttributes
+        );
     }
 
     @Override

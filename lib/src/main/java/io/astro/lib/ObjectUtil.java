@@ -5,7 +5,7 @@ import java.util.Arrays;
 /**
  * @author skeswa
  */
-public class Util {
+public class ObjectUtil {
     public static boolean equals(final Object a, final Object b) {
         return (a == null) ? (b == null) : a.equals(b);
     }
