@@ -59,8 +59,8 @@ public class TestComponent2 extends Component implements ClickListener {
           $(TestComponent1.class)
             .style(firstItemStyle)
             .attr(name, "random")
-            .attr(age, (int) (Math.random() * 19))
-        ).create();
+            .attr(age, (int) (Math.random() * 19)))
+        .create();
   }
 }
 ```
