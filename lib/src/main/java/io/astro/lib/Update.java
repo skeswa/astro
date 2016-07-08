@@ -12,7 +12,7 @@ public class Update {
         return new UpdateBuilder().listen(context, listener);
     }
 
-    public static void execute(final StatefulRenderable renderable) {
-        new UpdateBuilder().execute(renderable);
+    public static void execute(final Component component) {
+        new UpdateBuilder().execute(component);
     }
 }

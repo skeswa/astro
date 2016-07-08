@@ -10,7 +10,11 @@ public class AttributeValueSet {
     private final Map<Attribute, Object> attributeValueMap;
 
     AttributeValueSet(final Map<Attribute, Object> attributeValueMap) {
-        this.attributeValueMap = attributeValueMap;
+        if (attributeValueMap == null) {
+            this.attributeValueMap = new HashMap<>();
+        } else {
+            this.attributeValueMap = attributeValueMap;
+        }
     }
 
     public boolean has(final Attribute<?> attribute) {
@@ -19,7 +23,17 @@ public class AttributeValueSet {
 
     @SuppressWarnings("unchecked")
     public <T> T valueOf(final Attribute<T> attribute) {
-        return (T) attributeValueMap.get(attribute);
+        if (attribute == null) {
+            throw new IllegalArgumentException("Null is not a valid attribute.");
+        }
+
+        final T value = (T) attributeValueMap.get(attribute);
+
+        if (value == null) {
+            return attribute.getDefaultValue();
+        }
+
+        return value;
     }
 
     Map<Attribute, Object> getAttributeValueMap() {

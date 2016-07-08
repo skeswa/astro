@@ -1,5 +1,6 @@
 package io.astro.lib;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -9,7 +10,11 @@ public class StyleAttributeValueSet {
     private final Map<StyleAttribute, Object> styleAttributeValueMap;
 
     StyleAttributeValueSet(final Map<StyleAttribute, Object> styleAttributeValueMap) {
-        this.styleAttributeValueMap = styleAttributeValueMap;
+        if (styleAttributeValueMap == null) {
+            this.styleAttributeValueMap = new HashMap<>();
+        } else {
+            this.styleAttributeValueMap = styleAttributeValueMap;
+        }
     }
 
     public boolean has(final StyleAttribute<?> styleAttribute) {
@@ -18,7 +23,17 @@ public class StyleAttributeValueSet {
 
     @SuppressWarnings("unchecked")
     public <T> T valueOf(final StyleAttribute<T> styleAttribute) {
-        return (T) styleAttributeValueMap.get(styleAttribute);
+        if (styleAttribute == null) {
+            throw new IllegalArgumentException("Null is not a valid style attribute.");
+        }
+
+        final T value = (T) styleAttributeValueMap.get(styleAttribute);
+
+        if (value == null) {
+            return styleAttribute.getDefaultValue();
+        }
+
+        return value;
     }
 
     Map<StyleAttribute, Object> getStyleAttributeValueMap() {

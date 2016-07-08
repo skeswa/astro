@@ -62,6 +62,7 @@ class ElementComposite {
         this.placement = placement;
         this.parent = parent;
         this.indexInParent = indexInParent;
+        this.reductions = new ArrayList<>();
 
         // Perform the initial update.
         update(initialInputElement);
@@ -76,12 +77,7 @@ class ElementComposite {
         int reductionDepth = 0;
         Element currElement = inputElement;
 
-        while (currElement != null && currElement.getViewableType() != null) {
-            // Assert that the reductions list at least exists.
-            if (reductions == null) {
-                reductions = new ArrayList<>();
-            }
-
+        while (currElement != null && currElement.getViewableType() == null) {
             // First check to see whether this reduction has already been performed before.
             final boolean currReductionExists = reductions.size() > reductionDepth;
 
@@ -183,16 +179,13 @@ class ElementComposite {
         destroyOutputs();
 
         // Get rid of every renderable in the reductions pipeline.
-        if (reductions != null) {
+        if (reductions.size() > 0) {
             for (int i = reductions.size() - 1; i >= 0; i--) {
                 reductions.get(i).renderable.onUnmount();
             }
 
             // Get rid of all the reductions in one fell swoop.
             reductions.clear();
-
-            // Clear away the destroyed reductions.
-            reductions = null;
         }
 
         // Dis-associate from parent composite for garbage collection reasons.
@@ -246,8 +239,10 @@ class ElementComposite {
             // Stuff the appropriate values into the arrays.
             for (int i = 0; i < nextOutputElementChildren.length; i++) {
                 final Element childElement = nextOutputElementChildren[i];
-                nextElementCompositeChildren[i] = new ElementComposite(placement, i, this, childElement);
-                nextOutputViewable.insertChild(outputViewable.getView(), i);
+                final ElementComposite childComposite = new ElementComposite(placement, i, this, childElement);
+
+                nextElementCompositeChildren[i] = childComposite;
+                nextOutputViewable.insertChild(childComposite.getView(), i);
             }
 
             // Replace the view in the parent if necessary.

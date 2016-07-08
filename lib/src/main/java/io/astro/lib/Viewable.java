@@ -8,6 +8,7 @@ import android.view.View;
  */
 public interface Viewable extends ComponentType {
     void onMount(final Context context);
+    void onUnmount();
 
     void insertChild(final View view, final int index);
     void removeChild(final int index);

@@ -6,9 +6,9 @@ import java.util.*;
  * @author skeswa
  */
 public class ElementBuilder implements ElementChildArgument {
-    private static final long RESERVED_KEYS_COUNT = 10000;
+    private static final Element[] EMPTY_CHILDREN = new Element[0];
 
-    private Long key;
+    private long key = -1;
     private String ref;
     private boolean isNative;
     private List<Style> styles;
@@ -29,9 +29,9 @@ public class ElementBuilder implements ElementChildArgument {
         } else if (Viewable.class.isAssignableFrom(componentType)) {
             this.viewableType = (Class<? extends Viewable>) componentType;
             this.renderableType = null;
+        } else {
+            throw new IllegalArgumentException("Component type must implement Renderable or Viewable");
         }
-
-        throw new IllegalArgumentException("Component type must implement Renderable or Viewable");
     }
 
     public <T> ElementBuilder ref(final String ref) {
@@ -45,15 +45,7 @@ public class ElementBuilder implements ElementChildArgument {
     }
 
     public <T> ElementBuilder key(final long key) {
-        if (key < 0) {
-            throw new IllegalArgumentException("Keys must be non-negative");
-        }
-
-        if (key > Long.MAX_VALUE - RESERVED_KEYS_COUNT) {
-            throw new IllegalArgumentException("Keys must be less than " + (Long.MAX_VALUE - RESERVED_KEYS_COUNT));
-        }
-
-        this.key = key + RESERVED_KEYS_COUNT;
+        this.key = key;
 
         return this;
     }
@@ -145,11 +137,13 @@ public class ElementBuilder implements ElementChildArgument {
     public Element create() {
         long keyIndex = 0;
         Element[] children = null;
+
+        // Turn the list of child types into an array of elements.
         if (this.children != null && this.children.size() > 0) {
             children = new Element[this.children.size()];
             for (int i = 0; i < this.children.size(); i++) {
                 final ElementBuilder elementBuilder = this.children.get(i);
-                if (elementBuilder.key == null) {
+                if (elementBuilder.key == -1) {
                     elementBuilder.key = keyIndex++;
                 }
 
@@ -157,6 +151,12 @@ public class ElementBuilder implements ElementChildArgument {
             }
         }
 
+        // Ensure that children is not null.
+        if (children == null) {
+            children = EMPTY_CHILDREN;
+        }
+
+        // Reduce all styles to their corresponding attributes.
         Map<StyleAttribute, Object> styleAttributes = null;
         if (styles != null && styles.size() > 0) {
             styleAttributes = new HashMap<>();
@@ -164,6 +164,11 @@ public class ElementBuilder implements ElementChildArgument {
             for (final Style style : styles) {
                 styleAttributes.putAll(style.getAttributes());
             }
+        }
+
+        // If the key has ot been set, set it.
+        if (key == -1) {
+            key = 0;
         }
 
         return new Element(

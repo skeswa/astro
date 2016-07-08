@@ -5,6 +5,7 @@ package io.astro.lib;
  */
 public interface Renderable extends ComponentType {
     void onMount();
+    void onUnmount();
 
     void setRoot(final Placement placement);
     void setChildren(final Element[] children);

@@ -66,6 +66,63 @@ public class Element {
         return ObjectUtil.hash(key, renderableType);
     }
 
+    private StringBuilder stringify(int depth) {
+        final StringBuilder builder = new StringBuilder();
+
+        // Get the component type.
+        String componentType;
+        if (viewableType != null) {
+            componentType = viewableType.getName();
+        } else if (renderableType != null) {
+            componentType = renderableType.getName();
+        } else {
+            componentType = "???";
+        }
+
+        // Opening tag.
+        builder.append('<');
+        builder.append(componentType);
+
+        if (attributes.getAttributeValueMap().size() > 0) {
+            int i = 1;
+            for (final Map.Entry<Attribute, Object> entry : attributes.getAttributeValueMap().entrySet()) {
+                builder.append(" attr");
+                builder.append(i++);
+                builder.append("={");
+                builder.append(entry.getValue());
+                builder.append('}');
+            }
+        }
+
+        if (children != null && children.length > 0) {
+            final int childDepth = depth + 1;
+
+            builder.append('>');
+            builder.append('\n');
+
+            for (final Element child : children) {
+                for (int i = 0; i < childDepth; i++) {
+                    builder.append('\t');
+                }
+
+                builder.append(child.stringify(childDepth));
+                builder.append('\n');
+            }
+
+            for (int i = 0; i < depth; i++) {
+                builder.append('\t');
+            }
+
+            builder.append("</");
+            builder.append(componentType);
+            builder.append('>');
+        } else {
+            builder.append(" />");
+        }
+
+        return builder;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -86,5 +143,10 @@ public class Element {
     @Override
     public int hashCode() {
         return ObjectUtil.hash(key, ref, children, attributes, renderableType, styleAttributes);
+    }
+
+    @Override
+    public String toString() {
+        return stringify(0).toString();
     }
 }

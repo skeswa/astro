@@ -18,7 +18,17 @@ public class FieldValueSet {
 
     @SuppressWarnings("unchecked")
     public <T> T valueOf(final Field<T> field) {
-        return (T) fieldValueMap.get(field);
+        if (field == null) {
+            throw new IllegalArgumentException("Null is not a valid field.");
+        }
+
+        final T value = (T) fieldValueMap.get(field);
+
+        if (value == null) {
+            return field.getDefaultValue();
+        }
+
+        return value;
     }
 
     Map<Field, Object> getFieldValueMap() {
@@ -33,17 +43,11 @@ public class FieldValueSet {
 
         final FieldValueSet other = (FieldValueSet) o;
 
-        if (fieldValueMap == null && other.fieldValueMap != null) return false;
-        if (fieldValueMap != null && other.fieldValueMap == null) return false;
-        if (fieldValueMap != null && !fieldValueMap.equals(other.fieldValueMap)) return false;
-
-        return true;
+        return ObjectUtil.equals(fieldValueMap, other.fieldValueMap);
     }
 
     @Override
     public int hashCode() {
-        int hashCode = 1;
-        hashCode = 31 * hashCode + (fieldValueMap == null ? 0 : fieldValueMap.hashCode());
-        return hashCode;
+        return ObjectUtil.hash(fieldValueMap);
     }
 }
