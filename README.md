@@ -1,7 +1,7 @@
 # astro
 Extraterrestrial android development.  
   
-Developing good Android apps is hard, but developing _great_ Android apps feels impossible: [@nickbutcher](https://github.com/nickbutcher/plaid)'s [Plaid](https://github.com/nickbutcher/plaid) is a showcase of how difficult it is to build a great UX for Android devices. I blame Android's flawed developer story:
+Developing good Android apps is hard, but developing _great_ Android apps feels impossible: [@nickbutcher](https://github.com/nickbutcher/plaid)'s [Plaid](https://github.com/nickbutcher/plaid) perfectly showcases how difficult it is to craft rich,interactive user experiences for Android devices. For this problem, I can identify three primary culprits:
 - **Its just really tedious**  
 There is a ton of boilerplate between you, the developer, and the app you want to build.
 - **The SDK is huge, verbose and confusing**  
@@ -42,21 +42,21 @@ public class TestComponent2 extends Component implements ClickListener {
   @Override
   public Element render() {
     return
-      $(TestComponent1.class)
+      $(Container.class)
         .styles(containerStyle, valueOf(visible) ? CommonStyles.invisible : null)
         .attr(name, "value")
         .attr(age, 56)
         .attr(onClick, this)
         .children(
-          $(TestComponent1.class)
+          $(Item.class)
             .style(firstItemStyle)
             .attr(name, "random")
             .attr(age, (int) (Math.random() * 19)),
-          $(TestComponent1.class)
+          $(Item.class)
             .style(firstItemStyle)
             .attr(name, "random")
             .attr(age, (int) (Math.random() * 19)),
-          $(TestComponent1.class)
+          $(Item.class)
             .style(firstItemStyle)
             .attr(name, "random")
             .attr(age, (int) (Math.random() * 19)))
