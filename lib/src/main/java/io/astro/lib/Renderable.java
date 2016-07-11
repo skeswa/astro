@@ -7,14 +7,11 @@ public interface Renderable extends ComponentType {
     void onMount();
     void onUnmount();
 
-    int getCompositeReductionDepth();
+    void setChildren(final Element[] children);
+    void setComposite(final ElementComposite composite);
     void setCompositeReductionDepth(final int compositeReductionDepth);
 
-    ElementComposite getComposite();
-    void setComposite(final ElementComposite composite);
-
-    void setChildren(final Element[] children);
-
+    void enqueueUpdate(final Update update);
     boolean shouldUpdate(final AttributeValueSet nextAttributeState);
     boolean shouldUpdate(final StyleAttributeValueSet nextStyleAttributeValueSet);
 

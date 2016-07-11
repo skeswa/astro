@@ -12,6 +12,7 @@ public class ColorBox extends NativeComponent {
     public static Attribute<Integer> color = Attribute.create(Integer.class, Color.BLUE);
     public static Attribute<Integer> width = Attribute.create(Integer.class, 0);
     public static Attribute<Integer> height = Attribute.create(Integer.class, 0);
+    public static Attribute<View.OnClickListener> onClick = Attribute.create(View.OnClickListener.class);
 
     private View view;
 
@@ -30,6 +31,15 @@ public class ColorBox extends NativeComponent {
     public void onMount(Context context) {
         view = new View(context);
         view.setLayoutParams(new ViewGroup.LayoutParams(0, 0));
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                final View.OnClickListener listener = valueOf(onClick);
+                if (listener != null) {
+                    listener.onClick(v);
+                }
+            }
+        });
     }
 
     @Override

@@ -1,5 +1,6 @@
 package io.astro.lib;
 
+import android.content.Context;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +15,9 @@ import java.util.List;
  */
 class ElementComposite {
     /**
-     * The placement that encapsulates the renderables represented by this composite.
+     * The Android context to which this composite belongs.
      */
-    private Placement placement;
+    private final Context context;
     /**
      * The index of this composite in {@link #parent}'s array of childComposites.
      */
@@ -47,19 +48,19 @@ class ElementComposite {
     /**
      * Creates a new element composite.
      *
-     * @param placement                the placement of the astro placement.
+     * @param context             the context of the Views under this composite.
      * @param indexInParent       the index of the view that this composite represents in the
      *                            {@link #parent}'s array of children.
      * @param parent              the parent composite of this composite.
      * @param initialInputElement the template used to construct this composite and its children.
      */
     ElementComposite(
-        final Placement placement,
+        final Context context,
         final int indexInParent,
         final ElementComposite parent,
         final Element initialInputElement
     ) {
-        this.placement = placement;
+        this.context = context;
         this.parent = parent;
         this.indexInParent = indexInParent;
         this.reductions = new ArrayList<>();
@@ -88,7 +89,7 @@ class ElementComposite {
      * the input element. The initial depth is how deep in the Renderable hierarchy to start
      * reduction.
      *
-     * @param inputElement the element to be reduced.
+     * @param inputElement          the element to be reduced.
      * @param initialReductionDepth the level in the hierarchy at which the reduction begins.
      */
     void reduce(final Element inputElement, final int initialReductionDepth) {
@@ -125,11 +126,7 @@ class ElementComposite {
                 );
             } else {
                 // If there is no reduction in place, look to create it.
-                final Renderable currRenderable = createRenderable(
-                    this.placement,
-                    currElement,
-                    reductionDepth
-                );
+                final Renderable currRenderable = createRenderable(currElement, reductionDepth);
 
                 // Place the new renderable in the current reduction.
                 reductions.add(new ElementReduction(currElement, currRenderable));
@@ -196,9 +193,24 @@ class ElementComposite {
     }
 
     /**
+     * Returns true if the input element may be passed to
+     * {@link ElementComposite#reduce(Element, int)}. Returns false if a new composite must be
+     * created.
+     *
+     * @param inputElement the input element used for comparison.
+     * @return true if the input element may be passed to
+     * {@link ElementComposite#reduce(Element, int)}.
+     */
+    boolean inputElementIsCompatible(final Element inputElement) {
+        return inputElement == null ||
+            reductions.size() < 1 ||
+            inputElement.identifier() == reductions.get(0).element.identifier();
+    }
+
+    /**
      * Destroy's the state of this composite and that of all of its children.
      */
-    private void destroy() {
+    void destroy() {
         // Destroy is depth-first, so destroy all the childComposites first.
         if (childComposites != null) {
             for (final ElementComposite child : childComposites) {
@@ -265,7 +277,7 @@ class ElementComposite {
             destroy();
 
             // Then, create a brand new output viewable.
-            final Viewable nextOutputViewable = createViewable(placement, nextEl);
+            final Viewable nextOutputViewable = createViewable(nextEl);
             final Element[] nextOutputElementChildren = nextEl.getChildren();
             final ElementComposite[] nextElementCompositeChildren =
                 new ElementComposite[nextOutputElementChildren.length];
@@ -273,7 +285,8 @@ class ElementComposite {
             // Stuff the appropriate values into the arrays.
             for (int i = 0; i < nextOutputElementChildren.length; i++) {
                 final Element childElement = nextOutputElementChildren[i];
-                final ElementComposite childComposite = new ElementComposite(placement, i, this, childElement);
+                final ElementComposite childComposite = new ElementComposite(context, i, this,
+                    childElement);
 
                 nextElementCompositeChildren[i] = childComposite;
                 nextOutputViewable.insertChild(childComposite.getView(), i);
@@ -302,7 +315,8 @@ class ElementComposite {
             if (!ObjectUtil.equals(outputElement.getAttributes(), nextEl.getAttributes())) {
                 outputViewable.setAttributes(nextEl.getAttributes());
             }
-            if (!ObjectUtil.equals(outputElement.getStyleAttributes(), nextEl.getStyleAttributes())) {
+            if (!ObjectUtil.equals(outputElement.getStyleAttributes(), nextEl.getStyleAttributes
+                ())) {
                 outputViewable.setStyleAttributes(nextEl.getStyleAttributes());
             }
 
@@ -339,7 +353,7 @@ class ElementComposite {
 
                     if (childElementTuple == null) {
                         // This element was inserted.
-                        final ElementComposite nextCompositeChild = new ElementComposite(placement, i,
+                        final ElementComposite nextCompositeChild = new ElementComposite(context, i,
                             this, nextChildElement);
                         nextCompositeChildren[i] = nextCompositeChild;
                         outputViewable.insertChild(nextCompositeChild.outputViewable.getView(), i);
@@ -393,7 +407,6 @@ class ElementComposite {
      */
     @SuppressWarnings("all")
     private Renderable createRenderable(
-        final Placement placement,
         final Element element,
         final int reductionDepth
     ) {
@@ -416,21 +429,12 @@ class ElementComposite {
         }
     }
 
-    private static void unmountRenderable(final Renderable renderable) {
-        // Unmount the renderable.
-        renderable.onUnmount();
-
-        // Get rid of the references for garbage collection.
-        renderable.setComposite(null);
-        renderable.setChildren(null);
-    }
-
     @SuppressWarnings("all")
-    private static Viewable createViewable(final Placement placement, final Element element) {
+    private Viewable createViewable(final Element element) {
         try {
             final Viewable viewable = element.getViewableType().newInstance();
 
-            viewable.onMount(placement.getContext());
+            viewable.onMount(context);
             viewable.setAttributes(element.getAttributes());
             viewable.setStyleAttributes(element.getStyleAttributes());
 
@@ -444,11 +448,26 @@ class ElementComposite {
         }
     }
 
+    private static void unmountRenderable(final Renderable renderable) {
+        // Unmount the renderable.
+        renderable.onUnmount();
+
+        // Get rid of the references for garbage collection.
+        renderable.setComposite(null);
+        renderable.setChildren(null);
+    }
+
     private static Element renderRenderable(
         final Renderable renderable,
         final Element el,
         final Element nextEl
     ) {
+        // Check whether the next element is compatible with the current element.
+        if (el.identifier() != nextEl.identifier()) {
+            throw new IllegalArgumentException("The provided element is not a valid reduction " +
+                "target.");
+        }
+
         final boolean shouldUpdate = attributesCauseUpdate(renderable, el, nextEl) ||
             styleAttributesCauseUpdate(renderable, el, nextEl) ||
             childrenCauseUpdate(el, nextEl);
@@ -482,9 +501,10 @@ class ElementComposite {
         final Element el,
         final Element nextEl
     ) {
-        return !ObjectUtil.equals(el.getStyleAttributes(), nextEl.getStyleAttributes()) && renderable
-            .shouldUpdate
-                (nextEl.getStyleAttributes());
+        return !ObjectUtil.equals(el.getStyleAttributes(), nextEl.getStyleAttributes()) &&
+            renderable
+                .shouldUpdate
+                    (nextEl.getStyleAttributes());
     }
 
     private static boolean childrenCauseUpdate(final Element el, final Element nextEl) {
