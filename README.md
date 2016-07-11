@@ -44,22 +44,22 @@ public class TestComponent2 extends Component implements ClickListener {
     return
       $(Container.class)
         .styles(containerStyle, valueOf(visible) ? CommonStyles.invisible : null)
-        .attr(name, "value")
-        .attr(age, 56)
-        .attr(onClick, this)
+        .attr(Container.name, "value")
+        .attr(Container.age, 56)
+        .attr(Container.onClick, this)
         .children(
-          $(Item.class)
+          $(PersonListItem.class)
             .style(firstItemStyle)
-            .attr(name, "random")
-            .attr(age, (int) (Math.random() * 19)),
-          $(Item.class)
-            .style(firstItemStyle)
-            .attr(name, "random")
-            .attr(age, (int) (Math.random() * 19)),
-          $(Item.class)
-            .style(firstItemStyle)
-            .attr(name, "random")
-            .attr(age, (int) (Math.random() * 19)))
+            .attr(PersonListItem.name, "random")
+            .attr(PersonListItem.age, (int) (Math.random() * 19)),
+          $(PersonListItem.class)
+            .style(itemStyle)
+            .attr(PersonListItem.name, "random")
+            .attr(PersonListItem.age, (int) (Math.random() * 19)),
+          $(PersonListItem.class)
+            .style(itemStyle)
+            .attr(PersonListItem.name, "random")
+            .attr(PersonListItem.age, (int) (Math.random() * 19)))
         .create();
   }
 }
