@@ -12,7 +12,8 @@ public abstract class Component implements Renderable {
     private static final AttributeValueSet EMPTY_ATTRIBUTE_STATE = new AttributeValueSet(new HashMap<Attribute, Object>());
     private static final StyleAttributeValueSet EMPTY_STYLE_ATTRIBUTE_STATE = new StyleAttributeValueSet(new HashMap<StyleAttribute, Object>());
 
-    private Placement placement;
+    private ElementComposite composite;
+    private int compositeReductionDepth = -1;
 
     private Element[] children = EMPTY_CHILDREN;
     private FieldValueSet fieldState = EMPTY_FIELD_STATE;
@@ -26,8 +27,23 @@ public abstract class Component implements Renderable {
     public void onUnmount() {}
 
     @Override
-    public void setRoot(final Placement placement) {
-        this.placement = placement;
+    public int getCompositeReductionDepth() {
+        return compositeReductionDepth;
+    }
+
+    @Override
+    public void setCompositeReductionDepth(final int compositeReductionDepth) {
+        this.compositeReductionDepth = compositeReductionDepth;
+    }
+
+    @Override
+    public ElementComposite getComposite() {
+        return composite;
+    }
+
+    @Override
+    public void setComposite(final ElementComposite composite) {
+        this.composite = composite;
     }
 
     protected void onChildrenWillChange(final Element[] nextChildren) {}
@@ -54,13 +70,15 @@ public abstract class Component implements Renderable {
         styleAttributeState = nextStyleAttributeState;
     }
 
-    // TODO
+    protected void onFieldsWillChange(final FieldValueSet nextFieldState) {}
+
+    FieldValueSet getFields() {
+        return this.fieldState;
+    }
+
     void setFields(final FieldValueSet nextFieldState) {
-        // Make sure that this component is cleared for an update.
-        if (shouldUpdate(nextFieldState)) {
-            fieldState = nextFieldState;
-            // TODO(skeswa): perform composite.update().
-        }
+        onFieldsWillChange(nextFieldState);
+        fieldState = nextFieldState;
     }
 
     @Override
@@ -73,8 +91,7 @@ public abstract class Component implements Renderable {
         return true;
     }
 
-    // TODO
-    boolean shouldUpdate(final FieldValueSet nextFieldState) {
+    public boolean shouldUpdate(final FieldValueSet nextFieldState) {
         return fieldState == null && nextFieldState != null ||
             fieldState != null && nextFieldState == null ||
             (fieldState != null && !fieldState.equals(nextFieldState));

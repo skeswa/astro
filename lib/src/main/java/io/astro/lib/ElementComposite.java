@@ -64,17 +64,35 @@ class ElementComposite {
         this.indexInParent = indexInParent;
         this.reductions = new ArrayList<>();
 
-        // Perform the initial update.
-        update(initialInputElement);
+        // Perform the initial reduce.
+        reduce(initialInputElement, 0);
     }
 
     /**
-     * Updates this composite according to the different between old input element and inputElement.
+     * Updates the renderable and its children starting at the reduction depth specified.
      *
-     * @param inputElement the element that this composite should resemble.
+     * @param reductionDepth the level in the hierarchy at which the reduction resumes.
      */
-    void update(final Element inputElement) {
-        int reductionDepth = 0;
+    void update(final int reductionDepth) {
+        if (reductionDepth >= reductions.size()) {
+            throw new IllegalArgumentException(
+                "Reduction depth " + reductionDepth + " is out of bounds.");
+        }
+
+        // Start reduction at the index specified.
+        reduce(reductions.get(reductionDepth).element, reductionDepth);
+    }
+
+    /**
+     * Reduces the input element into an Android View by recursively rendering the sub-elements of
+     * the input element. The initial depth is how deep in the Renderable hierarchy to start
+     * reduction.
+     *
+     * @param inputElement the element to be reduced.
+     * @param initialReductionDepth the level in the hierarchy at which the reduction begins.
+     */
+    void reduce(final Element inputElement, final int initialReductionDepth) {
+        int reductionDepth = initialReductionDepth;
         Element currElement = inputElement;
 
         while (currElement != null && currElement.getViewableType() == null) {
@@ -109,7 +127,8 @@ class ElementComposite {
                 // If there is no reduction in place, look to create it.
                 final Renderable currRenderable = createRenderable(
                     this.placement,
-                    currElement
+                    currElement,
+                    reductionDepth
                 );
 
                 // Place the new renderable in the current reduction.
@@ -136,7 +155,7 @@ class ElementComposite {
         // continue, we gotta shave off extraneous reductions if they are no longer necessary.
         if (reductionDepth < reductions.size()) {
             for (int i = reductions.size() - 1; i >= reductionDepth; i--) {
-                reductions.get(i).renderable.onUnmount();
+                unmountRenderable(reductions.get(i).renderable);
                 reductions.remove(i);
             }
 
@@ -162,6 +181,21 @@ class ElementComposite {
     }
 
     /**
+     * Gets the renderable that is part of the reduction at the specified depth.
+     *
+     * @param reductionDepth the level in the hierarchy at which the reduction resumes.
+     * @return the renderable that is part of the reduction at the specified depth
+     */
+    Renderable getRenderableAtDepth(final int reductionDepth) {
+        if (reductionDepth >= reductions.size()) {
+            throw new IllegalArgumentException(
+                "Reduction depth " + reductionDepth + " is out of bounds.");
+        }
+
+        return reductions.get(reductionDepth).renderable;
+    }
+
+    /**
      * Destroy's the state of this composite and that of all of its children.
      */
     private void destroy() {
@@ -181,14 +215,14 @@ class ElementComposite {
         // Get rid of every renderable in the reductions pipeline.
         if (reductions.size() > 0) {
             for (int i = reductions.size() - 1; i >= 0; i--) {
-                reductions.get(i).renderable.onUnmount();
+                unmountRenderable(reductions.get(i).renderable);
             }
 
             // Get rid of all the reductions in one fell swoop.
             reductions.clear();
         }
 
-        // Dis-associate from parent composite for garbage collection reasons.
+        // Dis-associate from parent composite for garbage collection.
         parent = null;
         indexInParent = -1;
     }
@@ -315,7 +349,7 @@ class ElementComposite {
                         final ElementComposite childComposite = childComposites[oldIndex];
 
                         // Update the child composite.
-                        childComposite.update(nextChildElement);
+                        childComposite.reduce(nextChildElement, 0);
 
                         // Place the composite in the array.
                         nextCompositeChildren[i] = childComposite;
@@ -358,11 +392,16 @@ class ElementComposite {
      * @return
      */
     @SuppressWarnings("all")
-    private static Renderable createRenderable(final Placement placement, final Element element) {
+    private Renderable createRenderable(
+        final Placement placement,
+        final Element element,
+        final int reductionDepth
+    ) {
         try {
             final Renderable renderable = element.getRenderableType().newInstance();
 
-            renderable.setRoot(placement);
+            renderable.setComposite(this);
+            renderable.setCompositeReductionDepth(reductionDepth);
             renderable.setAttributes(element.getAttributes());
             renderable.setStyleAttributes(element.getStyleAttributes());
             renderable.setChildren(element.getChildren());
@@ -375,6 +414,15 @@ class ElementComposite {
             throw new RenderableCreationException("Could not create a new instance of Renderable " +
                 "\"" + element.getRenderableType().getName() + "\"", e);
         }
+    }
+
+    private static void unmountRenderable(final Renderable renderable) {
+        // Unmount the renderable.
+        renderable.onUnmount();
+
+        // Get rid of the references for garbage collection.
+        renderable.setComposite(null);
+        renderable.setChildren(null);
     }
 
     @SuppressWarnings("all")

@@ -1,5 +1,6 @@
 package io.astro.lib;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -14,6 +15,17 @@ public class FieldValueSet {
 
     public boolean has(final Field<?> field) {
         return fieldValueMap.containsKey(field);
+    }
+
+    FieldValueSet extend(final Map<Field, Object> fieldStateChanges) {
+        if (fieldStateChanges == null) {
+            return this;
+        }
+
+        final Map<Field, Object> newFieldValueMap = new HashMap<>(fieldValueMap);
+        newFieldValueMap.putAll(fieldStateChanges);
+
+        return new FieldValueSet(newFieldValueMap);
     }
 
     @SuppressWarnings("unchecked")

@@ -17,25 +17,22 @@ public abstract class BaseRenderable implements Renderable {
     public void setChildren(final Element[] children) {
         if (!Arrays.equals(this.children, children)) {
             this.children = children;
-            // TODO(skeswa): re-render.
         }
     }
 
     @Override
     public void setAttributes(final AttributeValueSet nextAttributeState) {
-        // Make sure that this renderable is cleared for an update.
+        // Make sure that this renderable is cleared for an reduce.
         if (shouldUpdate(nextAttributeState)) {
             attributeState = nextAttributeState;
-            // TODO(skeswa): re-render.
         }
     }
 
     @Override
     public void setStyleAttributes(final StyleAttributeValueSet nextStyleAttributeState) {
-        // Make sure that this renderable is cleared for an update.
+        // Make sure that this renderable is cleared for an reduce.
         if (shouldUpdate(nextStyleAttributeState)) {
             styleAttributeState = nextStyleAttributeState;
-            // TODO(skeswa): re-render.
         }
     }
 
