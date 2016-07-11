@@ -1,7 +1,7 @@
 # astro
 Extraterrestrial android development.  
   
-Developing good Android apps is hard, but developing _great_ Android apps feels impossible: [@nickbutcher](https://github.com/nickbutcher/plaid)'s [Plaid](https://github.com/nickbutcher/plaid) perfectly showcases how difficult it is to craft rich,interactive user experiences for Android devices. For this problem, I can identify three primary culprits:
+Developing good Android apps is hard, but developing _great_ Android apps feels impossible: [@nickbutcher](https://github.com/nickbutcher/plaid)'s [Plaid](https://github.com/nickbutcher/plaid) perfectly showcases how difficult it is to craft rich, interactive user experiences for Android. For this problem, I can identify three primary culprits:
 - **Its just really tedious**  
 There is a ton of boilerplate between you, the developer, and the app you want to build.
 - **The SDK is huge, verbose and confusing**  
