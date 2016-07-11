@@ -5,7 +5,6 @@ import android.view.View;
 /**
  * @author skeswa
  */
-interface ComponentType {
+interface Attributable {
     void setAttributes(final AttributeValueSet nextAttributeState);
-    void setStyleAttributes(final StyleAttributeValueSet nextStyleAttributeValueSet);
 }

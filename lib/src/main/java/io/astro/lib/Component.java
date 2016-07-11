@@ -11,7 +11,6 @@ public abstract class Component implements Renderable {
     static final Element[] EMPTY_CHILDREN = new Element[0];
     static final FieldValueSet EMPTY_FIELD_STATE = new FieldValueSet(new HashMap<Field, Object>());
     static final AttributeValueSet EMPTY_ATTRIBUTE_STATE = new AttributeValueSet(new HashMap<Attribute, Object>());
-    static final StyleAttributeValueSet EMPTY_STYLE_ATTRIBUTE_STATE = new StyleAttributeValueSet(new HashMap<StyleAttribute, Object>());
 
     private ElementComposite composite;
     private int compositeReductionDepth = -1;
@@ -19,7 +18,6 @@ public abstract class Component implements Renderable {
     private Element[] children = EMPTY_CHILDREN;
     private FieldValueSet fieldState = EMPTY_FIELD_STATE;
     private AttributeValueSet attributeState = EMPTY_ATTRIBUTE_STATE;
-    private StyleAttributeValueSet styleAttributeState = EMPTY_STYLE_ATTRIBUTE_STATE;
 
     @Override
     public void onMount() {}
@@ -53,15 +51,6 @@ public abstract class Component implements Renderable {
     public void setAttributes(AttributeValueSet nextAttributeState) {
         onAttributesWillChange(nextAttributeState);
         attributeState = nextAttributeState;
-    }
-
-    @SuppressWarnings("unused")
-    protected void onStyleAttributesWillChange(final StyleAttributeValueSet nextStyleAttributeState) {}
-
-    @Override
-    public void setStyleAttributes(final StyleAttributeValueSet nextStyleAttributeState) {
-        onStyleAttributesWillChange(nextStyleAttributeState);
-        styleAttributeState = nextStyleAttributeState;
     }
 
     @SuppressWarnings("unused")
@@ -145,11 +134,6 @@ public abstract class Component implements Renderable {
     }
 
     @SuppressWarnings("unused")
-    protected <T> T valueOf(final StyleAttribute<T> styleAttribute) {
-        return styleAttributeState.valueOf(styleAttribute);
-    }
-
-    @SuppressWarnings("unused")
     protected final ElementBuilder $(final ElementBuilder elementBuilder) {
         return elementBuilder;
     }
@@ -173,7 +157,7 @@ public abstract class Component implements Renderable {
     }
 
     @SuppressWarnings("unused")
-    protected final ElementBuilder $(final Class<? extends ComponentType> componentType) {
+    protected final ElementBuilder $(final Class<? extends Attributable> componentType) {
         // The component type is required.
         if (componentType == null) {
             // TODO(skeswa): standardize parameter null check exception messages.

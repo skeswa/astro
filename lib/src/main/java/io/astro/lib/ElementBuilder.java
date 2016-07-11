@@ -10,27 +10,34 @@ public class ElementBuilder implements ElementChildArgument {
 
     private long key = -1;
     private String ref;
-    private boolean isNative;
     private List<Style> styles;
     private List<ElementBuilder> children;
     private Map<Attribute, Object> attributeValueMap;
+
+    private final boolean isStyleable;
     private final Class<? extends Viewable> viewableType;
     private final Class<? extends Renderable> renderableType;
 
     @SuppressWarnings("unchecked")
-    ElementBuilder(final Class<? extends ComponentType> componentType) {
+    ElementBuilder(final Class<? extends Attributable> componentType) {
         if (componentType == null) {
             throw new IllegalArgumentException("Null is not a valid component type");
         }
 
         if (Renderable.class.isAssignableFrom(componentType)) {
-            this.viewableType = null;
-            this.renderableType = (Class<? extends Renderable>) componentType;
+            viewableType = null;
+            renderableType = (Class<? extends Renderable>) componentType;
         } else if (Viewable.class.isAssignableFrom(componentType)) {
-            this.viewableType = (Class<? extends Viewable>) componentType;
-            this.renderableType = null;
+            viewableType = (Class<? extends Viewable>) componentType;
+            renderableType = null;
         } else {
             throw new IllegalArgumentException("Component type must implement Renderable or Viewable");
+        }
+
+        if (Styleable.class.isAssignableFrom(componentType)) {
+            isStyleable = true;
+        } else {
+            isStyleable = false;
         }
     }
 
@@ -77,6 +84,10 @@ public class ElementBuilder implements ElementChildArgument {
     }
 
     public ElementBuilder style(final Style style) {
+        if (!isStyleable) {
+            throw new UnsupportedOperationException("Only the elements of Styleable types may be styled.");
+        }
+
         if (style != null) {
             if (styles == null) {
                 styles = new ArrayList<>();
@@ -89,6 +100,10 @@ public class ElementBuilder implements ElementChildArgument {
     }
 
     public ElementBuilder styles(final Collection<Style> styles) {
+        if (!isStyleable) {
+            throw new UnsupportedOperationException("Only the elements of Styleable types may be styled.");
+        }
+
         if (styles != null) {
             if (this.styles == null) {
                 this.styles = new ArrayList<>();
@@ -101,6 +116,10 @@ public class ElementBuilder implements ElementChildArgument {
     }
 
     public ElementBuilder styles(final Style...styles) {
+        if (!isStyleable) {
+            throw new UnsupportedOperationException("Only the elements of Styleable types may be styled.");
+        }
+
         if (styles != null) {
             if (this.styles == null) {
                 this.styles = new ArrayList<>();
@@ -174,7 +193,7 @@ public class ElementBuilder implements ElementChildArgument {
         return new Element(
             key,
             ref,
-            isNative,
+            isStyleable,
             children,
             attributeValueMap,
             viewableType,

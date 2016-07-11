@@ -154,15 +154,6 @@ public abstract class AstroActivity extends Activity implements Renderable {
     }
 
     @SuppressWarnings("unused")
-    protected void onStyleAttributesWillChange(final StyleAttributeValueSet nextStyleAttributeState) {}
-
-    @Override
-    public void setStyleAttributes(final StyleAttributeValueSet nextStyleAttributeState) {
-        onStyleAttributesWillChange(nextStyleAttributeState);
-        styleAttributeState = nextStyleAttributeState;
-    }
-
-    @SuppressWarnings("unused")
     protected void onFieldsWillChange(final FieldValueSet nextFieldState) {}
 
     void setFields(final FieldValueSet nextFieldState) {
@@ -209,7 +200,7 @@ public abstract class AstroActivity extends Activity implements Renderable {
     }
 
     @SuppressWarnings("unused")
-    protected final ElementBuilder $(final Class<? extends ComponentType> componentType) {
+    protected final ElementBuilder $(final Class<? extends Attributable> componentType) {
         // The component type is required.
         if (componentType == null) {
             // TODO(skeswa): standardize parameter null check exception messages.

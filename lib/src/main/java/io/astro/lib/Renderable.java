@@ -3,7 +3,7 @@ package io.astro.lib;
 /**
  * @author skeswa
  */
-public interface Renderable extends ComponentType {
+public interface Renderable extends Attributable {
     void onMount();
     void onUnmount();
 

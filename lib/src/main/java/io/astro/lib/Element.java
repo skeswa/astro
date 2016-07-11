@@ -10,6 +10,7 @@ public class Element {
     private final long key;
     private final String ref;
     private final Element[] children;
+    private final boolean isStyleable;
     private final AttributeValueSet attributes;
     private final StyleAttributeValueSet styleAttributes;
     private final Class<? extends Viewable> viewableType;
@@ -18,8 +19,8 @@ public class Element {
     public Element(
         final long key,
         final String ref,
-        final boolean isNative,
         final Element[] children,
+        final boolean isStyleable,
         final Map<Attribute, Object> attributes,
         final Class<? extends Viewable> viewableType,
         final Class<? extends Renderable> renderableType,
@@ -29,6 +30,7 @@ public class Element {
         this.ref = ref;
         this.children = children;
         this.attributes = new AttributeValueSet(attributes);
+        this.isStyleable = isStyleable;
         this.viewableType = viewableType;
         this.renderableType = renderableType;
         this.styleAttributes = new StyleAttributeValueSet(styleAttributes);
@@ -44,6 +46,10 @@ public class Element {
 
     Element[] getChildren() {
         return children;
+    }
+
+    public boolean isStyleable() {
+        return isStyleable;
     }
 
     public AttributeValueSet getAttributes() {

@@ -6,7 +6,7 @@ import android.view.View;
 /**
  * @author skeswa
  */
-public interface Viewable extends ComponentType {
+public interface Viewable extends Attributable {
     void onMount(final Context context);
     void onUnmount();
 

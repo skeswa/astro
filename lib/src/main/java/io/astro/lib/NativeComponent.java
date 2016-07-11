@@ -1,13 +1,16 @@
 package io.astro.lib;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author skeswa
  */
 public abstract class NativeComponent implements Viewable {
-    private AttributeValueSet attributeState;
-    private StyleAttributeValueSet styleAttributeState;
+    private static final StyleAttributeValueSet EMPTY_STYLE_ATTRIBUTE_STATE = new StyleAttributeValueSet(new HashMap<StyleAttribute, Object>());
+
+    private AttributeValueSet attributeState = Component.EMPTY_ATTRIBUTE_STATE;
+    private StyleAttributeValueSet styleAttributeState = EMPTY_STYLE_ATTRIBUTE_STATE;
 
     @Override
     public void setAttributes(final AttributeValueSet nextAttributeState) {
@@ -37,9 +40,10 @@ public abstract class NativeComponent implements Viewable {
 
     @Override
     public void setStyleAttributes(final StyleAttributeValueSet nextStyleAttributeState) {
+        // TODO(skeswa): turn this into changes to a CSSNode.
         if (styleAttributeState == null) {
             for (final Map.Entry<StyleAttribute, Object> entry : nextStyleAttributeState.getStyleAttributeValueMap().entrySet()) {
-                onStyleAttributeValueChanged(entry.getKey(), entry.getValue());
+//                onStyleAttributeValueChanged(entry.getKey(), entry.getValue());
             }
         } else {
             final Map<StyleAttribute, Object> styleAttributeValues = styleAttributeState.getStyleAttributeValueMap();
@@ -47,13 +51,13 @@ public abstract class NativeComponent implements Viewable {
 
             for (final Map.Entry<StyleAttribute, Object> entry : nextStyleAttributeValues.entrySet()) {
                 if (!styleAttributeValues.containsKey(entry.getKey()) || !ObjectUtil.equals(entry.getValue(), styleAttributeValues.get(entry.getKey()))) {
-                    onStyleAttributeValueChanged(entry.getKey(), entry.getValue());
+//                    onStyleAttributeValueChanged(entry.getKey(), entry.getValue());
                 }
             }
 
             for (final StyleAttribute key : styleAttributeValues.keySet()) {
                 if (!nextStyleAttributeValues.containsKey(key)) {
-                    onStyleAttributeValueChanged(key, null);
+//                    onStyleAttributeValueChanged(key, null);
                 }
             }
         }
@@ -62,8 +66,6 @@ public abstract class NativeComponent implements Viewable {
     }
 
     protected abstract void onAttributeValueChanged(final Attribute attribute, Object value);
-
-    protected void onStyleAttributeValueChanged(final StyleAttribute styleAttribute, Object value) {}
 
     protected <T> T valueOf(final Attribute<T> attribute) {
         if (attribute == null) {
@@ -75,17 +77,5 @@ public abstract class NativeComponent implements Viewable {
         }
 
         return attributeState.valueOf(attribute);
-    }
-
-    protected <T> T valueOf(final StyleAttribute<T> styleAttribute) {
-        if (styleAttribute == null) {
-            throw new IllegalArgumentException("Null is not a valid style attribute.");
-        }
-
-        if (styleAttributeState == null || !styleAttributeState.has(styleAttribute)) {
-            return styleAttribute.getDefaultValue();
-        }
-
-        return styleAttributeState.valueOf(styleAttribute);
     }
 }

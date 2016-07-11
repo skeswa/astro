@@ -315,9 +315,8 @@ class ElementComposite {
             if (!ObjectUtil.equals(outputElement.getAttributes(), nextEl.getAttributes())) {
                 outputViewable.setAttributes(nextEl.getAttributes());
             }
-            if (!ObjectUtil.equals(outputElement.getStyleAttributes(), nextEl.getStyleAttributes
-                ())) {
-                outputViewable.setStyleAttributes(nextEl.getStyleAttributes());
+            if (nextEl.isStyleable()) {
+                ((Styleable) outputViewable).setStyleAttributes(nextEl.getStyleAttributes());
             }
 
             // Compare old children to new children at an item-by-item level if the children have
@@ -416,7 +415,6 @@ class ElementComposite {
             renderable.setComposite(this);
             renderable.setCompositeReductionDepth(reductionDepth);
             renderable.setAttributes(element.getAttributes());
-            renderable.setStyleAttributes(element.getStyleAttributes());
             renderable.setChildren(element.getChildren());
 
             return renderable;
@@ -436,7 +434,10 @@ class ElementComposite {
 
             viewable.onMount(context);
             viewable.setAttributes(element.getAttributes());
-            viewable.setStyleAttributes(element.getStyleAttributes());
+
+            if (element.isStyleable()) {
+                ((Styleable) viewable).setStyleAttributes(element.getStyleAttributes());
+            }
 
             return viewable;
         } catch (IllegalAccessException e) {
@@ -474,7 +475,6 @@ class ElementComposite {
 
         // Update the state of the renderable now that the comparisons have been finished.
         renderable.setAttributes(el.getAttributes());
-        renderable.setStyleAttributes(el.getStyleAttributes());
         renderable.setChildren(el.getChildren());
 
         if (shouldUpdate) {

@@ -36,7 +36,7 @@ public class Update {
         return new UpdateBuilder().set(field, value);
     }
 
-    public static <T> UpdateBuilder listen(T context, final UpdateListener<T> listener) {
+    public static <T> UpdateBuilder listen(final Object context, final UpdateListener listener) {
         return new UpdateBuilder().listen(context, listener);
     }
 

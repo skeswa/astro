@@ -1,5 +1,6 @@
 package io.astro.lib;
 
+import java.util.Collection;
 import java.util.Map;
 
 import io.astro.lib.style.constants.BorderStyle;
@@ -11,6 +12,7 @@ import io.astro.lib.style.constants.ResizeMode;
 import io.astro.lib.style.constants.TextAlignment;
 import io.astro.lib.style.constants.TextDecoration;
 import io.astro.lib.style.constants.Visibility;
+import io.astro.lib.style.csslayout.CSSNode;
 
 /**
  * @author skeswa
