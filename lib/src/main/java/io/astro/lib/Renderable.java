@@ -13,7 +13,6 @@ public interface Renderable extends Attributable {
 
     void enqueueUpdate(final Update update);
     boolean shouldUpdate(final AttributeValueSet nextAttributeState);
-    boolean shouldUpdate(final StyleAttributeValueSet nextStyleAttributeValueSet);
 
     Element render();
 }

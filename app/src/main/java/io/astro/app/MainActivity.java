@@ -3,10 +3,12 @@ package io.astro.app;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class MainActivity extends AppCompatActivity {
+import io.astro.lib.AstroActivity;
+import io.astro.lib.Element;
 
+public class MainActivity extends AstroActivity {
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public Element render() {
+        return $(FrenchFlag.class).create();
     }
 }

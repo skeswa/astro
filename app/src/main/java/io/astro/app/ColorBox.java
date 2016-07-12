@@ -1,9 +1,12 @@
-package io.astro.lib;
+package io.astro.app;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
+
+import io.astro.lib.Attribute;
+import io.astro.lib.NativeComponent;
 
 /**
  * @author skeswa
@@ -21,9 +24,9 @@ public class ColorBox extends NativeComponent {
         if (attribute == color) {
             view.setBackgroundColor((Integer) value);
         } else if (attribute == width) {
-//            view.getLayoutParams().width = (Integer) value;
+            view.getLayoutParams().width = (Integer) value;
         } else if (attribute == height) {
-//            view.getLayoutParams().height = (Integer) value;
+            view.getLayoutParams().height = (Integer) value;
         }
     }
 

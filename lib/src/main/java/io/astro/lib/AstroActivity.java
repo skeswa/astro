@@ -16,7 +16,6 @@ public abstract class AstroActivity extends Activity implements Renderable {
 
     private FieldValueSet fieldState = Component.EMPTY_FIELD_STATE;
     private AttributeValueSet attributeState = Component.EMPTY_ATTRIBUTE_STATE;
-    private StyleAttributeValueSet styleAttributeState = Component.EMPTY_STYLE_ATTRIBUTE_STATE;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -36,7 +35,7 @@ public abstract class AstroActivity extends Activity implements Renderable {
         // Set the content view of this Activity.
         setContentView(rootView);
 
-        // Now that the view stuff is taken care of, perform onMount.
+        // Now that the view stuff is taken care of, perform onCreateView.
         onMount();
     }
 
@@ -81,11 +80,6 @@ public abstract class AstroActivity extends Activity implements Renderable {
 
     @Override
     public boolean shouldUpdate(final AttributeValueSet nextAttributeState) {
-        return true;
-    }
-
-    @Override
-    public boolean shouldUpdate(final StyleAttributeValueSet nextStyleAttributeValueSet) {
         return true;
     }
 
@@ -169,11 +163,6 @@ public abstract class AstroActivity extends Activity implements Renderable {
     @SuppressWarnings("unused")
     protected <T> T valueOf(final Attribute<T> attribute) {
         return attributeState.valueOf(attribute);
-    }
-
-    @SuppressWarnings("unused")
-    protected <T> T valueOf(final StyleAttribute<T> styleAttribute) {
-        return styleAttributeState.valueOf(styleAttribute);
     }
 
     @SuppressWarnings("unused")

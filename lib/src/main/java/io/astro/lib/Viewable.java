@@ -7,8 +7,8 @@ import android.view.View;
  * @author skeswa
  */
 public interface Viewable extends Attributable {
-    void onMount(final Context context);
-    void onUnmount();
+    void onCreateView(final Context context);
+    void onDestroyView();
 
     void insertChild(final View view, final int index);
     void removeChild(final int index);

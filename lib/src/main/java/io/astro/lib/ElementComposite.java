@@ -245,7 +245,7 @@ class ElementComposite {
     private void destroyOutputs() {
         if (outputViewable != null) {
             // Declare that this viewable is going away for good.
-            outputViewable.onUnmount();
+            outputViewable.onDestroyView();
 
             // If the viewable has view childComposites, get rid of the childComposites.
             if (outputViewable.getView() instanceof ViewGroup) {
@@ -432,7 +432,7 @@ class ElementComposite {
         try {
             final Viewable viewable = element.getViewableType().newInstance();
 
-            viewable.onMount(context);
+            viewable.onCreateView(context);
             viewable.setAttributes(element.getAttributes());
 
             if (element.isStyleable()) {
@@ -470,7 +470,6 @@ class ElementComposite {
         }
 
         final boolean shouldUpdate = attributesCauseUpdate(renderable, el, nextEl) ||
-            styleAttributesCauseUpdate(renderable, el, nextEl) ||
             childrenCauseUpdate(el, nextEl);
 
         // Update the state of the renderable now that the comparisons have been finished.
@@ -494,17 +493,6 @@ class ElementComposite {
         return !ObjectUtil.equals(el.getAttributes(), nextEl.getAttributes()) && renderable
             .shouldUpdate(nextEl
                 .getAttributes());
-    }
-
-    private static boolean styleAttributesCauseUpdate(
-        final Renderable renderable,
-        final Element el,
-        final Element nextEl
-    ) {
-        return !ObjectUtil.equals(el.getStyleAttributes(), nextEl.getStyleAttributes()) &&
-            renderable
-                .shouldUpdate
-                    (nextEl.getStyleAttributes());
     }
 
     private static boolean childrenCauseUpdate(final Element el, final Element nextEl) {

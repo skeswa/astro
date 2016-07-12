@@ -66,11 +66,6 @@ public abstract class Component implements Renderable {
         return true;
     }
 
-    @Override
-    public boolean shouldUpdate(final StyleAttributeValueSet nextStyleAttributeValueSet) {
-        return true;
-    }
-
     boolean shouldUpdate(final FieldValueSet nextFieldState) {
         return fieldState == null && nextFieldState != null ||
             fieldState != null && nextFieldState == null ||

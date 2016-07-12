@@ -1,9 +1,12 @@
-package io.astro.lib;
+package io.astro.app;
 
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+
+import io.astro.lib.Attribute;
+import io.astro.lib.NativeComponent;
 
 /**
  * @author skeswa
@@ -16,8 +19,7 @@ public class LinearLayoutComponent extends NativeComponent {
     @Override
     public void onCreateView(Context context) {
         layout = new LinearLayout(context);
-        layout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT));
+        layout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 
     @Override
@@ -26,7 +28,7 @@ public class LinearLayoutComponent extends NativeComponent {
     }
 
     @Override
-    protected void onAttributeValueChanged(Attribute attribute, Object value) {
+    protected void onAttributeValueChanged(final Attribute attribute, final Object value) {
         if (attribute == horizontal) {
             layout.setOrientation(Boolean.TRUE.equals(value) ? LinearLayout.HORIZONTAL :
                 LinearLayout.VERTICAL);

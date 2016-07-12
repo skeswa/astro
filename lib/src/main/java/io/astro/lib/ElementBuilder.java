@@ -25,19 +25,20 @@ public class ElementBuilder implements ElementChildArgument {
         }
 
         if (Renderable.class.isAssignableFrom(componentType)) {
+            isStyleable = false;
             viewableType = null;
             renderableType = (Class<? extends Renderable>) componentType;
         } else if (Viewable.class.isAssignableFrom(componentType)) {
             viewableType = (Class<? extends Viewable>) componentType;
             renderableType = null;
+
+            if (Styleable.class.isAssignableFrom(componentType)) {
+                isStyleable = true;
+            } else {
+                isStyleable = false;
+            }
         } else {
             throw new IllegalArgumentException("Component type must implement Renderable or Viewable");
-        }
-
-        if (Styleable.class.isAssignableFrom(componentType)) {
-            isStyleable = true;
-        } else {
-            isStyleable = false;
         }
     }
 
@@ -85,7 +86,7 @@ public class ElementBuilder implements ElementChildArgument {
 
     public ElementBuilder style(final Style style) {
         if (!isStyleable) {
-            throw new UnsupportedOperationException("Only the elements of Styleable types may be styled.");
+            throw new UnsupportedOperationException("Only the elements with components of type Styleable may be styled.");
         }
 
         if (style != null) {
@@ -101,7 +102,7 @@ public class ElementBuilder implements ElementChildArgument {
 
     public ElementBuilder styles(final Collection<Style> styles) {
         if (!isStyleable) {
-            throw new UnsupportedOperationException("Only the elements of Styleable types may be styled.");
+            throw new UnsupportedOperationException("Only the elements with components of type Styleable may be styled.");
         }
 
         if (styles != null) {
@@ -117,7 +118,7 @@ public class ElementBuilder implements ElementChildArgument {
 
     public ElementBuilder styles(final Style...styles) {
         if (!isStyleable) {
-            throw new UnsupportedOperationException("Only the elements of Styleable types may be styled.");
+            throw new UnsupportedOperationException("Only the elements with components of type Styleable may be styled.");
         }
 
         if (styles != null) {
@@ -193,8 +194,8 @@ public class ElementBuilder implements ElementChildArgument {
         return new Element(
             key,
             ref,
-            isStyleable,
             children,
+            isStyleable,
             attributeValueMap,
             viewableType,
             renderableType,
