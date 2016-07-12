@@ -64,3 +64,5 @@ public class TestComponent2 extends Component implements ClickListener {
   }
 }
 ```
+
+#### Update: Sampleapp successfully renders!  
