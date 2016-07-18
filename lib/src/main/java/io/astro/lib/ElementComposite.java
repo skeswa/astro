@@ -63,7 +63,7 @@ class ElementComposite {
         final ElementComposite parent,
         final Element initialInputElement
     ) {
-        Log.v(TAG, toLogMsg("Initializing new element composite."));
+        if (Config.loggingEnabled) Log.d(TAG, toLogMsg("Initializing new element composite."));
 
         this.context = context;
         this.parent = parent;
@@ -98,29 +98,37 @@ class ElementComposite {
      * @param initialReductionDepth the level in the hierarchy at which the reduction begins.
      */
     void reduce(final Element inputElement, final int initialReductionDepth) {
-        Log.v(TAG, toLogMsg("Starting the reduction process with element:\n\n" + inputElement + "\n\nat initial reduction depth", initialReductionDepth));
+        if (Config.loggingEnabled)
+            Log.d(TAG, toLogMsg("Starting the reduction process with element:\n\n" + inputElement
+                + "\n\nat initial reduction depth", initialReductionDepth));
 
         int reductionDepth = initialReductionDepth;
         Element currElement = inputElement;
 
         while (currElement != null && currElement.getViewableType() == null) {
-            Log.v(TAG, toLogMsg("Reached reduction depth", reductionDepth, "with the current element",
-                "being", currElement));
+            if (Config.loggingEnabled)
+                Log.d(TAG, toLogMsg("Reached reduction depth", reductionDepth, "with the current " +
+                        "element",
+                    "being", currElement));
 
             // First check to see whether this reduction has already been performed before.
             final boolean currReductionExists = reductions.size() > reductionDepth;
 
             // If there is already a reduction in place, look to apply diffs.
             if (currReductionExists) {
-                Log.v(TAG, toLogMsg("Reduction for", currElement, "already exists; applying result of element comparison."));
+                if (Config.loggingEnabled)
+                    Log.d(TAG, toLogMsg("Reduction for", currElement, "already exists; applying " +
+                        "result of element comparison."));
 
                 // Get the pre-existing reduction.
                 final ElementReduction reduction = reductions.get(reductionDepth);
 
-                Log.v(TAG, toLogMsg("Calling Renderable#render() on the current reduction's renderable (" + reduction.renderable + ")"));
+                if (Config.loggingEnabled)
+                    Log.d(TAG, toLogMsg("Calling Renderable#render() on the current reduction's " +
+                        "renderable (" + reduction.renderable + ")"));
                 // Use the current renderable to derive the next output element. After that, advance
                 // the current element to the next element.
-                final Element nextElement = renderRenderable(
+                final Element nextElement = renderNextElement(
                     reduction.renderable,
                     reduction.element,
                     currElement
@@ -129,8 +137,10 @@ class ElementComposite {
                 // If the next element is null, it means that another render was not necessary.
                 // Since no follow up needs to occur, exit here.
                 if (nextElement == null) {
-                    Log.v(TAG, toLogMsg("After comparing input elements, deduced that no further rendering" +
-                        " is necessary."));
+                    if (Config.loggingEnabled)
+                        Log.d(TAG, toLogMsg("After comparing input elements, deduced that no " +
+                            "further rendering" +
+                            " is necessary."));
                     return;
                 }
 
@@ -143,7 +153,9 @@ class ElementComposite {
                 // Advance the current element to the next element.
                 currElement = nextElement;
             } else {
-                Log.v(TAG, toLogMsg("Reduction for", currElement, "does not already exist; creating it."));
+                if (Config.loggingEnabled)
+                    Log.d(TAG, toLogMsg("Reduction for", currElement, "does not already exist; " +
+                        "creating it."));
 
                 // If there is no reduction in place, look to create it.
                 final Renderable currRenderable = createRenderable(currElement, reductionDepth);
@@ -151,7 +163,9 @@ class ElementComposite {
                 // Place the new renderable in the current reduction.
                 reductions.add(new ElementReduction(currElement, currRenderable));
 
-                Log.v(TAG, toLogMsg("Calling Renderable#render() on the current reduction's renderable (" + currRenderable + ")"));
+                if (Config.loggingEnabled)
+                    Log.d(TAG, toLogMsg("Calling Renderable#render() on the current reduction's " +
+                        "renderable (" + currRenderable + ")"));
 
                 // Use the current renderable to derive the next output element. After that, advance
                 // the current element to the next element.
@@ -164,8 +178,9 @@ class ElementComposite {
 
         // If the current element is null, throw a tantrum.
         if (currElement == null) {
-            Log.e(TAG, toLogMsg("Output element of Renderable#render() on", inputElement
-                .getRenderableType(), "was null."));
+            if (Config.loggingEnabled)
+                Log.e(TAG, toLogMsg("Output element of Renderable#render() on", inputElement
+                    .getRenderableType(), "was null."));
 
             throw new IllegalElementException(
                 "All Renderables must eventually render a Viewable. Renderable \"" +
@@ -176,8 +191,10 @@ class ElementComposite {
         // If we got this far, it means the current element represents a viewable. Before we
         // continue, we gotta shave off extraneous reductions if they are no longer necessary.
         if (reductionDepth < reductions.size()) {
-            Log.v(TAG, toLogMsg("After", reductionDepth, "reductions, there are", (reductions.size()
-                - reductionDepth), "old reductions to cull."));
+            if (Config.loggingEnabled)
+                Log.d(TAG, toLogMsg("After", reductionDepth, "reductions, there are", (reductions
+                    .size()
+                    - reductionDepth), "old reductions to cull."));
 
             for (int i = reductions.size() - 1; i >= reductionDepth; i--) {
                 unmountRenderable(reductions.get(i).renderable);
@@ -188,7 +205,7 @@ class ElementComposite {
             destroyOutputs();
         }
 
-        Log.v(TAG, toLogMsg("Now updating the output viewable."));
+        if (Config.loggingEnabled) Log.d(TAG, toLogMsg("Now updating the output viewable."));
 
         // Pass along the most reduced element to the output viewable.
         updateOutputViewable(currElement);
@@ -243,7 +260,8 @@ class ElementComposite {
     void destroy() {
         // Destroy is depth-first, so destroy all the childComposites first.
         if (childComposites != null) {
-            Log.v(TAG, toLogMsg("Destroying this composite's child composites."));
+            if (Config.loggingEnabled)
+                Log.d(TAG, toLogMsg("Destroying this composite's child composites."));
 
             for (final ElementComposite child : childComposites) {
                 child.destroy();
@@ -258,7 +276,8 @@ class ElementComposite {
 
         // Get rid of every renderable in the reductions pipeline.
         if (reductions.size() > 0) {
-            Log.v(TAG, toLogMsg("Destroying this composite's reductions"));
+            if (Config.loggingEnabled)
+                Log.d(TAG, toLogMsg("Destroying this composite's reductions"));
 
             for (int i = reductions.size() - 1; i >= 0; i--) {
                 unmountRenderable(reductions.get(i).renderable);
@@ -278,7 +297,8 @@ class ElementComposite {
      */
     private void destroyOutputViewable() {
         if (outputViewable != null) {
-            Log.v(TAG, toLogMsg("Destroying this composite's output viewable"));
+            if (Config.loggingEnabled)
+                Log.d(TAG, toLogMsg("Destroying this composite's output viewable"));
 
             // Declare that this viewable is going away for good.
             outputViewable.onDestroyView();
@@ -298,7 +318,8 @@ class ElementComposite {
      */
     private void destroyOutputs() {
         destroyOutputViewable();
-        Log.v(TAG, toLogMsg("Destroying this composite's output element."));
+        if (Config.loggingEnabled)
+            Log.d(TAG, toLogMsg("Destroying this composite's output element."));
         outputElement = null;
     }
 
@@ -312,7 +333,9 @@ class ElementComposite {
         // Figure out whether or not the existing viewable can be tweaked, or if it needs to be
         // replaced completely.
         if (outputElement == null || outputElement.identifier() != nextEl.identifier()) {
-            Log.v(TAG, toLogMsg("Creating an output viewable for element:\n\n" + nextEl));
+            if (Config.loggingEnabled)
+                Log.d(TAG, toLogMsg("Creating an output viewable for element:\n\n" + nextEl +
+                    "\n\nsince the identifier of the output element has changed"));
 
             // The output viewable and its childComposites simply need to be replaced.
             final ElementComposite parent = this.parent;
@@ -358,22 +381,28 @@ class ElementComposite {
             this.outputViewable = nextOutputViewable;
         } else {
             // The output viewable and its childComposites simply need to be updated.
-            Log.v(TAG, toLogMsg("Updating the existing output viewable according to element", nextEl));
+            if (Config.loggingEnabled)
+                Log.d(TAG, toLogMsg("Updating the existing output viewable according to element",
+                    nextEl));
 
             // Update the attributes of the output viewable.
             if (!ObjectUtil.equals(outputElement.getAttributes(), nextEl.getAttributes())) {
-                Log.v(TAG, toLogMsg("Updating the existing output viewable's attributes."));
+                if (Config.loggingEnabled)
+                    Log.d(TAG, toLogMsg("Updating the existing output viewable's attributes."));
                 outputViewable.setAttributes(nextEl.getAttributes());
             }
             if (nextEl.isStyleable()) {
-                Log.v(TAG, toLogMsg("Updating the existing output viewable's style attributes."));
+                if (Config.loggingEnabled)
+                    Log.d(TAG, toLogMsg("Updating the existing output viewable's style attributes" +
+                        "."));
                 ((Styleable) outputViewable).setStyleAttributes(nextEl.getStyleAttributes());
             }
 
             // Compare old children to new children at an item-by-item level if the children have
             // changed in any way.
             if (!Arrays.equals(outputElement.getChildren(), nextEl.getChildren())) {
-                Log.v(TAG, toLogMsg("Updating the existing output viewable's children."));
+                if (Config.loggingEnabled)
+                    Log.d(TAG, toLogMsg("Updating the existing output viewable's children."));
 
                 final Element[] childElements = outputElement.getChildren();
                 final Element[] nextChildElements = nextEl.getChildren();
@@ -454,15 +483,17 @@ class ElementComposite {
      * Creates a new renderable according to the type specified by element.
      *
      * @param placement the placement of the astro placement.
-     * @param element
-     * @return
+     * @param element   the reference element for the Renderable.
+     * @return a new Renderable instance matching element.
      */
     @SuppressWarnings("all")
     private Renderable createRenderable(
         final Element element,
         final int reductionDepth
     ) {
-        Log.v(TAG, toLogMsg("Creating a new instance of Renderable", element.getRenderableType()));
+        if (Config.loggingEnabled)
+            Log.d(TAG, toLogMsg("Creating a new instance of Renderable", element
+                .getRenderableType()));
 
         try {
             final Renderable renderable = element.getRenderableType().newInstance();
@@ -482,9 +513,16 @@ class ElementComposite {
         }
     }
 
+    /**
+     * Creates a new Viewable according to the properties of element.
+     *
+     * @param element the reference element for the Viewable.
+     * @return a new Viewable instance matching element.
+     */
     @SuppressWarnings("all")
     private Viewable createViewable(final Element element) {
-        Log.v(TAG, toLogMsg("Creating a new instance of Viewable", element.getViewableType()));
+        if (Config.loggingEnabled)
+            Log.d(TAG, toLogMsg("Creating a new instance of Viewable", element.getViewableType()));
 
         try {
             final Viewable viewable = element.getViewableType().newInstance();
@@ -508,13 +546,14 @@ class ElementComposite {
 
     /**
      * Helper method used to write the log message in logging routines.
+     *
      * @param msgParts the parts of the message to be stitched together.
      * @return the combined log message.
      */
-    private String toLogMsg(final Object...msgParts) {
+    private String toLogMsg(final Object... msgParts) {
         final StringBuilder builder = new StringBuilder();
         builder.append('[');
-        builder.append(this.toString());
+        builder.append(Integer.toHexString(this.hashCode()));
         builder.append(']');
 
         for (final Object msgPart : msgParts) {
@@ -529,8 +568,13 @@ class ElementComposite {
         return builder.toString();
     }
 
+    /**
+     * Unmounts renderable.
+     *
+     * @param renderable the renderable to be unmounted.
+     */
     private void unmountRenderable(final Renderable renderable) {
-        Log.v(TAG, toLogMsg("Unmounting Renderable", renderable));
+        if (Config.loggingEnabled) Log.d(TAG, toLogMsg("Unmounting Renderable", renderable));
 
         // Unmount the renderable.
         renderable.onUnmount();
@@ -540,7 +584,15 @@ class ElementComposite {
         renderable.setChildren(null);
     }
 
-    private static Element renderRenderable(
+    /**
+     * Uses renderable to render an output element.
+     *
+     * @param renderable the Renderable that corresponds to el.
+     * @param el         the reference element.
+     * @param nextEl     the next element.
+     * @return the output element if there was cause for an update; null otherwise.
+     */
+    private static Element renderNextElement(
         final Renderable renderable,
         final Element el,
         final Element nextEl
@@ -567,6 +619,15 @@ class ElementComposite {
         return null;
     }
 
+    /**
+     * Returns true if the attributes of nextEl, when compared to the attributes of el, are
+     * different.
+     *
+     * @param renderable the renderable that corresponds to el.
+     * @param el         the reference element.
+     * @param nextEl     the next element.
+     * @return true if the children of nextEl, when compared to the children of el, are different.
+     */
     private static boolean attributesCauseUpdate(
         final Renderable renderable,
         final Element el,
@@ -577,10 +638,22 @@ class ElementComposite {
                 .getAttributes());
     }
 
+    /**
+     * Returns true if the children of nextEl, when compared to the children of el, are not the
+     * same.
+     *
+     * @param el     the reference element.
+     * @param nextEl the next element.
+     * @return true if the children of nextEl, when compared to the children of el, are not the
+     * same.
+     */
     private static boolean childrenCauseUpdate(final Element el, final Element nextEl) {
         return !Arrays.equals(el.getChildren(), nextEl.getChildren());
     }
 
+    /**
+     * An Element-Index pair used in child element array comparison.
+     */
     private static class ElementIndexTuple {
         private final int index;
         private final Element element;
@@ -591,6 +664,9 @@ class ElementComposite {
         }
     }
 
+    /**
+     * Represents an Element-Renderable pair (the Renderable corresponds to the Element).
+     */
     private static class ElementReduction {
         private final Element element;
         private final Renderable renderable;
