@@ -66,3 +66,4 @@ public class TestComponent2 extends Component implements ClickListener {
 ```
 
 #### Update: Sampleapp successfully renders!  
+![Imgur](http://i.imgur.com/Jt0vx6e.png)
