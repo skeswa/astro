@@ -1,5 +1,7 @@
 package io.astro.lib;
 
+import android.util.Log;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,6 +10,8 @@ import java.util.Map;
  * @author skeswa
  */
 public abstract class Component implements Renderable {
+    private static final String TAG = "Astro::ElementComposite";
+
     static final Element[] EMPTY_CHILDREN = new Element[0];
     static final FieldValueSet EMPTY_FIELD_STATE = new FieldValueSet(new HashMap<Field, Object>());
     static final AttributeValueSet EMPTY_ATTRIBUTE_STATE = new AttributeValueSet(new HashMap<Attribute, Object>());
@@ -78,6 +82,9 @@ public abstract class Component implements Renderable {
         if (composite == null) {
             throw new IllegalArgumentException("Only mounted components may be updated.");
         }
+
+        if (Config.loggingEnabled)
+            Log.d(TAG, toLogMsg("Adding update", update, "into the update queue."));
 
         // Localize update state.
         final Object listenerContext = update == null ? null : update.getListenerContext();
@@ -160,6 +167,30 @@ public abstract class Component implements Renderable {
         }
 
         return new ElementBuilder(componentType);
+    }
+
+    /**
+     * Helper method used to write the log message in logging routines.
+     *
+     * @param msgParts the parts of the message to be stitched together.
+     * @return the combined log message.
+     */
+    private String toLogMsg(final Object... msgParts) {
+        final StringBuilder builder = new StringBuilder();
+        builder.append('[');
+        builder.append(Integer.toHexString(this.hashCode()));
+        builder.append(']');
+
+        for (final Object msgPart : msgParts) {
+            builder.append(' ');
+            builder.append(msgPart);
+        }
+
+        if (builder.charAt(builder.length() - 1) != '.') {
+            builder.append('.');
+        }
+
+        return builder.toString();
     }
 
     @Override

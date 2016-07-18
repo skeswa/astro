@@ -340,10 +340,11 @@ class ElementComposite {
             // The output viewable and its childComposites simply need to be replaced.
             final ElementComposite parent = this.parent;
             final int indexInParent = this.indexInParent;
+            final boolean alreadyMounted = outputViewable != null;
 
             // Destroy the output viewable (if it even exists) because the type of the Viewable
             // must change.
-            if (outputViewable != null) {
+            if (alreadyMounted) {
                 destroyOutputViewable();
             }
 
@@ -379,6 +380,17 @@ class ElementComposite {
             this.outputElement = nextEl;
             this.indexInParent = indexInParent;
             this.outputViewable = nextOutputViewable;
+
+            // If the renderables and viewable associated with this composite haven't been mounted
+            // yet, mount them.
+            if (!alreadyMounted) {
+                // Mount all the reductions if they exist.
+                if (reductions != null) {
+                    for (int i = reductions.size() - 1; i >= 0; i--) {
+                        reductions.get(i).renderable.onMount();
+                    }
+                }
+            }
         } else {
             // The output viewable and its childComposites simply need to be updated.
             if (Config.loggingEnabled)
@@ -599,6 +611,7 @@ class ElementComposite {
     ) {
         // Check whether the next element is compatible with the current element.
         if (el.identifier() != nextEl.identifier()) {
+            // TODO(skeswa): it should be fine to have a new type of element. Look into this.
             throw new IllegalArgumentException("The provided element is not a valid reduction " +
                 "target.");
         }
