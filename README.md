@@ -13,42 +13,51 @@ Astro aims to simplify Android development by introducing a concise and powerful
 
 ## Concept
 ```java
-public class TestComponent2 extends Component implements ClickListener {
+public class Roster extends Component implements ClickListener {
   class Props {
-    static final Prop<Boolean> visible = Prop.type(Boolean.class).defaultsTo(false).create();
-    static final Prop<Boolean> visible = Prop.type(Boolean.class).defaultsTo(false).create();
-    static final Prop<Boolean> visible = Prop.type(Boolean.class).defaultsTo(false).create();
+    static final Prop<ImmutableList<Player>> players =
+      Prop
+        .type(ImmutableList<Player>.class)
+        .defaultsTo(ImmutableList.empty())
+        .optional()
+        .create();
   }
 
   class Styles {
     static final Style container =
       Style
         .alignItems(Flex.Alignment.CENTER)
-        .flexDirection(Flex.Direction.ROW)
+        .flexDirection(Flex.Direction.COLUMN)
+        .flexGrow(1)
         .justifyContent(Flex.Justification.CENTER)
-        .padding(15)
         .create();
-    static final Style item =
+    static final Style playerCard =
       Style
-        .backgroundColor(Color.BLUE)
-        .marginLeft(12)
+        .spacing(15)
+        .flexDirection(Flex.Direction.COLUMN)
+        .justifyContent(Flex.Justification.CENTER)
         .create();
-    static final Style firstItem =
+    static final Style playerImage =
       Style
-        .extends(itemStyle)
-        .marginLeft(null)
+        .aspectRatio(2, 1)
+        .flexGrow(1)
+        .minWidth(200)
         .create();
   }
+  
+  ImmutableList<Element> getPlayerCards()
 
   @Override
   public Element render() {
     return
-      $(Container.class)
-        .styles(Styles.container, valueOf(Props.visible) ? CommonStyles.invisible : null)
-        .prop(Container.Props.name, "value")
-        .prop(Container.Props.age, 56)
-        .prop(Container.Props.onClick, this)
+      $(Box.class)
+        .styles(Styles.container)
         .children(
+          $(Box.class)
+            .styles(Styles.ship)
+            .children(),
+          $(Text.class)
+            .prop(Text.Prop.content, "There 
           $(PersonListItem.class)
             .style(Styles.firstItem)
             .prop(PersonListItem.Props.name, "random")
