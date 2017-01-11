@@ -14,28 +14,46 @@ Astro aims to simplify Android development by introducing a concise and powerful
 ## Concept
 ```java
 public class TestComponent2 extends Component implements ClickListener {
-  private static final Field<Boolean> visible = Field.create(Boolean.class, false);
+  private static class Styles {
+    static final Style container =
+      Style
+        .alignItems(Flex.Alignment.CENTER)
+        .flexDirection(Flex.Direction.ROW)
+        .justifyContent(Flex.Justification.CENTER)
+        .padding(15)
+        .create();
+    static final Style item =
+      Style
+        .backgroundColor(Color.BLUE)
+        .marginLeft(12)
+        .create();
+    static final Style firstItem =
+      Style
+        .extends(itemStyle)
+        .marginLeft(null)
+        .create();
+  }
 
-  private static final Style containerStyle = Style
-    .alignItems(Flex.Alignment.CENTER)
-    .flexDirection(Flex.Direction.ROW)
-    .justifyContent(Flex.Justification.CENTER)
-    .padding(15)
-    .create();
+  private static class Fields {
+    static final Field<Boolean> visible =
+      Field
+        .type(Boolean.class)
+        .defaultsTo(false)
+        .create();
+  }
 
-  private static final Style itemStyle = Style
-    .backgroundColor(Color.BLUE)
-    .marginLeft(12)
-    .create();
-
-  private static final Style firstItemStyle = Style.from(itemStyle)
-    .marginLeft(null)
-    .create();
+  public static class Props {
+    public static final Prop<Boolean> visible =
+      Prop
+        .type(Boolean.class)
+        .defaultsTo(false)
+        .create();
+  }
 
   @Override
   public void onClick() {
     Update
-      .set(visible, true)
+      .set(Fields.visible, true)
       .execute(this);
   }
 
@@ -43,23 +61,23 @@ public class TestComponent2 extends Component implements ClickListener {
   public Element render() {
     return
       $(Container.class)
-        .styles(containerStyle, valueOf(visible) ? CommonStyles.invisible : null)
-        .attr(Container.name, "value")
-        .attr(Container.age, 56)
-        .attr(Container.onClick, this)
+        .styles(Style.container, valueOf(Fields.visible) ? CommonStyles.invisible : null)
+        .prop(Container.Props.name, "value")
+        .prop(Container.Props.age, 56)
+        .prop(Container.Props.onClick, this)
         .children(
           $(PersonListItem.class)
-            .style(firstItemStyle)
-            .attr(PersonListItem.name, "random")
-            .attr(PersonListItem.age, (int) (Math.random() * 19)),
+            .style(Styles.firstItem)
+            .prop(PersonListItem.Props.name, "random")
+            .prop(PersonListItem.Props.age, (int) (Math.random() * 19)),
           $(PersonListItem.class)
-            .style(itemStyle)
-            .attr(PersonListItem.name, "random")
-            .attr(PersonListItem.age, (int) (Math.random() * 19)),
+            .style(Styles.firstItem)
+            .prop(PersonListItem.Props.name, "random")
+            .prop(PersonListItem.Props.age, (int) (Math.random() * 19)),
           $(PersonListItem.class)
-            .style(itemStyle)
-            .attr(PersonListItem.name, "random")
-            .attr(PersonListItem.age, (int) (Math.random() * 19)))
+            .style(Styles.firstItem)
+            .prop(PersonListItem.Props.name, "random")
+            .prop(PersonListItem.Props.age, (int) (Math.random() * 19)))
         .create();
   }
 }
