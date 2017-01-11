@@ -14,7 +14,7 @@ Astro aims to simplify Android development by introducing a concise and powerful
 ## Concept
 ```java
 public class TestComponent2 extends Component implements ClickListener {
-  public static class Props {
+  public static final class Props {
     public static final Prop<Boolean> visible =
       Prop
         .type(Boolean.class)
@@ -41,26 +41,12 @@ public class TestComponent2 extends Component implements ClickListener {
         .marginLeft(null)
         .create();
   }
-  class Fields {
-    static Field<Boolean> visible =
-      Field
-        .type(Boolean.class)
-        .defaultsTo(false)
-        .create();
-  }
-
-  @Override
-  public void onClick() {
-    Update
-      .set(Fields.visible, true)
-      .execute(this);
-  }
 
   @Override
   public Element render() {
     return
       $(Container.class)
-        .styles(Style.container, valueOf(Fields.visible) ? CommonStyles.invisible : null)
+        .styles(Styles.container, valueOf(Props.visible) ? CommonStyles.invisible : null)
         .prop(Container.Props.name, "value")
         .prop(Container.Props.age, 56)
         .prop(Container.Props.onClick, this)
