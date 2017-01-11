@@ -14,37 +14,36 @@ Astro aims to simplify Android development by introducing a concise and powerful
 ## Concept
 ```java
 public class TestComponent2 extends Component implements ClickListener {
-  private static class Styles {
-    static final Style container =
+  public static class Props {
+    public static final Prop<Boolean> visible =
+      Prop
+        .type(Boolean.class)
+        .defaultsTo(false)
+        .create();
+  }
+
+  class Styles {
+    static Style container =
       Style
         .alignItems(Flex.Alignment.CENTER)
         .flexDirection(Flex.Direction.ROW)
         .justifyContent(Flex.Justification.CENTER)
         .padding(15)
         .create();
-    static final Style item =
+    static Style item =
       Style
         .backgroundColor(Color.BLUE)
         .marginLeft(12)
         .create();
-    static final Style firstItem =
+    static Style firstItem =
       Style
         .extends(itemStyle)
         .marginLeft(null)
         .create();
   }
-
-  private static class Fields {
-    static final Field<Boolean> visible =
+  class Fields {
+    static Field<Boolean> visible =
       Field
-        .type(Boolean.class)
-        .defaultsTo(false)
-        .create();
-  }
-
-  public static class Props {
-    public static final Prop<Boolean> visible =
-      Prop
         .type(Boolean.class)
         .defaultsTo(false)
         .create();
